@@ -6,10 +6,13 @@ import {
   TextInput,
   View,
   StatusBar,
+  Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {MyButton} from './Splash_Screen';
 import BackButton from './Widgets/BackButton';
+import MyModal from './Widgets/Modal';
+import CallApi from '../Utility/network';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({Email: '', Password: ''});
@@ -23,9 +26,32 @@ export default function Login({navigation}) {
     console.log('input changing', name, val);
     console.log('inputs :', inputs);
   }
+
+  // function handleLogin(){
+  //   CallApi('users/login', 'POST', body).then(async r => {
+  //     if (r.message) {
+  //       // setModal({isVisible: true, text: r.message});
+  //       // setStatus('Input');
+  //       return;
+  //     } else {
+  //       setStatus('Loaded');
+  //       setToken(r.token);
+  //       navigation.navigate('Home');
+  //     }
+  //   });
+  // }
+
   const form_data = {
     Submit_text: 'Login',
     onSubmit() {
+      if (inputs.Email === '') {
+        Alert.alert("Email can't be empty");
+        return;
+      } else if (inputs.Password === '') {
+        Alert.alert("Passward can't be empty");
+        return;
+      }
+
       navigation.navigate('Chats');
     },
     inputs: [
@@ -102,11 +128,143 @@ export default function Login({navigation}) {
           />
         </Pressable>
       </View>
+
+      <AltNavigate
+        onPress={() => {
+          navigation.navigate('Register');
+        }}
+        text1="Don't have an Account, "
+        text2="Register first"
+      />
+
+      {/* <MyModal /> */}
+    </View>
+  );
+}
+
+export function Register({navigation}) {
+  const [inputs, setInputs] = useState({Name: '', Email: '', Password: ''});
+
+  function handleChangeInputs(name, val) {
+    setInputs({
+      ...inputs,
+      [name]: val,
+      abc: 'abc',
+    });
+    console.log('input changing', name, val);
+    console.log('inputs :', inputs);
+  }
+  const form_data = {
+    Submit_text: 'Register',
+    onSubmit() {
+      navigation.navigate('Chats');
+    },
+    inputs: [
+      {
+        id: 1,
+        label: 'Your username',
+        value: inputs.Name,
+        name: 'Username',
+        handleChangeInputs,
+        isSecureEntry: false,
+      },
+      {
+        id: 2,
+        label: 'Email Address',
+        value: inputs.Email,
+        name: 'Email',
+        handleChangeInputs,
+        isSecureEntry: false,
+      },
+      {
+        id: 3,
+        label: 'Password',
+        value: inputs.Password,
+        name: 'Password',
+        handleChangeInputs,
+        isSecureEntry: true,
+      },
+    ],
+  };
+  return (
+    <View style={styles.con}>
+      <StatusBar backgroundColor="#F8F8F8" />
+      {/* Back button */}
+      <View style={styles.Back_btn}>
+        <BackButton
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
+      </View>
+
+      {/* Abosolute Image */}
+      <View style={styles.Tilted_image}>
+        <Image source={require('../Assets/login_img.png')} />
+      </View>
+
+      {/* text */}
+      <View>
+        <Text style={styles.Heading}>Hello, Start your Journey</Text>
+        <Text style={styles.Text}>
+          Happy to see you, to create your account{' '}
+        </Text>
+        <Text style={styles.Text}>please Register first.</Text>
+      </View>
+
+      <Form form_data={form_data} />
+
+      {/* or login with */}
+      {/* <View
+        style={[styles.flexRow, {paddingBottom: 30, paddingHorizontal: 20}]}>
+        <View style={styles.Horizontal_Line} />
+        <Text style={styles.Text}>Or Login With</Text>
+        <View style={styles.Horizontal_Line} />
+      </View> */}
+
+      {/* other login icons */}
+      {/* <View style={[styles.flexRow, {paddingHorizontal: 60}]}>
+        <Pressable>
+          <Image
+            // style={styles.Samll_Image}
+            source={require('../Assets/Google.png')}
+          />
+        </Pressable>
+        <Pressable>
+          <Image
+            // style={styles.Samll_Image}
+            source={require('../Assets/Apple.png')}
+          />
+        </Pressable>
+        <Pressable>
+          <Image
+            // style={styles.Samll_Image}
+            source={require('../Assets/Facebook.png')}
+          />
+        </Pressable>
+      </View> */}
+
+      <AltNavigate
+        onPress={() => {
+          navigation.navigate('Login');
+        }}
+        text1="Already Have an account "
+        text2="Login Here"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  color_purple: {
+    color: 'purple',
+  },
+  alt_navigate: {
+    marginTop: 20,
+    flexDirection: 'row',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
   flexRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -183,6 +341,17 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
+
+function AltNavigate({onPress, text1, text2}) {
+  return (
+    <View style={styles.alt_navigate}>
+      <Text>{text1}</Text>
+      <Pressable onPress={onPress}>
+        <Text style={styles.color_purple}>{text2}</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 function Form({form_data}) {
   return (

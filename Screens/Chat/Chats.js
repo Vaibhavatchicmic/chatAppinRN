@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {Pressable, StatusBar, TextInput, View, Text} from 'react-native';
 import BackButton from '../Widgets/BackButton';
 import {Image} from 'react-native-svg';
@@ -10,6 +10,7 @@ import ChatFooter from './ChatFooter';
 import styles from './Styles';
 
 export default function Chats({navigation}) {
+  const ScrollViewRef = useRef(null);
   return (
     <View backgroundColor="white" style={{flex: 1}}>
       <ChatHeader
@@ -17,9 +18,9 @@ export default function Chats({navigation}) {
           navigation.goBack();
         }}
       />
-      <ChatBox />
+      <ChatBox ScrollViewRef={ScrollViewRef} />
       <View style={styles.dropShadow} />
-      <ChatFooter />
+      <ChatFooter ScrollViewRef={ScrollViewRef} />
     </View>
   );
 }

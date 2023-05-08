@@ -17,10 +17,10 @@ function ChatHeader({onBack}) {
           <View style={styles.image_box}>
             <Image
               style={styles.Image_icon}
-              source={require('../../Assets/Person.jpg')}
+              source={require('../../Assets/Group.png')}
             />
           </View>
-          <Text>Group Name</Text>
+          <Text>Global Group</Text>
         </View>
       </View>
       <View style={styles.icons}>

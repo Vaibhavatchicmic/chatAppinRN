@@ -7,7 +7,7 @@ import {
   TextInput,
   StyleSheet,
 } from 'react-native';
-import MyModal from './MyModal';
+import MyModal from './MyModal2';
 export default function Form({form_data, modal, setModal, showLoader = false}) {
   return (
     <View style={styles.flex_con}>

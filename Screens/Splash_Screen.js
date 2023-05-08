@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   Image,
   Pressable,
@@ -7,7 +7,9 @@ import {
   View,
   StatusBar,
 } from 'react-native';
+import MyModal from './Widgets/Modal';
 export default function SplashScreen({navigation}) {
+  const Modalref = useRef(null);
   return (
     <View>
       <StatusBar backgroundColor="white" color="black" />
@@ -29,6 +31,8 @@ export default function SplashScreen({navigation}) {
           <Text style={styles.btn_text}>Get Started</Text>
         </MyButton>
       </View>
+
+      {/* <MyModal ref={Modalref} /> */}
     </View>
   );
 }

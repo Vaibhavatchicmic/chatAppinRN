@@ -1,36 +1,56 @@
-import {ScrollView, View, Text, StyleSheet} from 'react-native';
+import {ScrollView, View, Text, StyleSheet, FlatList} from 'react-native';
 import React from 'react';
-import Svg, {Path} from 'react-native-svg';
+import Svg, {Path, Use} from 'react-native-svg';
+import {
+  selectMessages,
+  selectUsername,
+  selelectReadTill,
+  store,
+} from '../../Redux/store';
+import {useSelector} from 'react-redux';
 
-export default function ChatBox() {
+function TimeStamp(time) {
+  const date = new Date(time);
+  return `${date.getHours()}:${date.getMinutes()}`;
+}
+
+export default function ChatBox({ScrollViewRef}) {
+  const messages = useSelector(selectMessages);
+  const readTill = useSelector(selelectReadTill);
+  const Username = useSelector(selectUsername);
+  // console.log(messages);
   return (
     <View style={{flex: 1}}>
-      <ScrollView style={{paddingHorizontal: 20}}>
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText
-          text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk"
-          me={true}
-          isread={true}
-        />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={false} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText
-          text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk"
-          me={true}
-          isread={true}
-        />
-        <ChatNewDay text="today" />
-        <ChatText text="hellolllll" me={false} />
-        <ChatText text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsflk" me={true} />
-        <ChatText
-          text="aldfsk;jadsk;sakdf;jlaksdf;jlkajsfasdfsadadfasdfsadfsadfsafdlk"
-          me={true}
-        />
-      </ScrollView>
+      {/* <ScrollView style={{paddingHorizontal: 20}} ref={ScrollViewRef}>
+        <ChatNewDay text={'Today'} />
+        {messages.map(mes => (
+          <ChatText
+            text={mes.text}
+            me={Username === mes.sender}
+            time={TimeStamp(mes.time)}
+            isread={mes.time <= readTill}
+            key={mes.id}
+          />
+        ))}
+      </ScrollView> */}
+      <FlatList
+        ref={ScrollViewRef}
+        data={messages}
+        renderItem={({item}) => {
+          const mes = item;
+          console.log(mes);
+          // return <Text>hello</Text>;
+          return (
+            <ChatText
+              text={mes.text}
+              me={Username === mes.sender}
+              time={TimeStamp(mes.time)}
+              isread={mes.time <= readTill}
+              key={mes.id}
+            />
+          );
+        }}
+      />
     </View>
   );
 }
@@ -52,7 +72,7 @@ function ChatText({text, me, time = '14:12', isread}) {
           me ? styles.ChatTimeMy : styles.ChatTimeOther,
         ]}>
         <Text style={[styles.Text, styles.Text_small]}>
-          {time} {isread && <ReadIcon />}
+          {time} {me && isread && <ReadIcon />}
         </Text>
       </View>
     </View>
@@ -137,14 +157,14 @@ const styles = StyleSheet.create({
   ChatText: {
     maxWidth: 250,
     paddingHorizontal: 10,
-    paddingVertical: 20,
+    paddingVertical: 10,
     borderRadius: 15,
     lineHeight: 21,
   },
 
   isread_icon: {
     // marginTop: 5,
-    top: 4,
+    top: 3,
     // position: 'relative',
   },
 });

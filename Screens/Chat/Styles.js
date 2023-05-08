@@ -15,8 +15,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   Image_icon: {
-    width: '120%',
-    height: '120%',
+    width: 30,
+    height: 30,
   },
   image_box: {
     // width: 60,
@@ -57,6 +57,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     // zIndex: 100,
     paddingHorizontal: 10,
+  },
+  send_btn: {
+    width: 40,
+    height: 40,
   },
   dropShadow: {
     // width: '100%',
