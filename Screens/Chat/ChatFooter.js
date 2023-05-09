@@ -28,7 +28,7 @@ function ChatFooter({ScrollViewRef}) {
       },
     });
     setInput('');
-    ScrollViewRef.current.scrollToEnd({animated: true});
+    // ScrollViewRef.current.scrollToEnd({animated: true});
   }
 
   const isTyping = input !== '';

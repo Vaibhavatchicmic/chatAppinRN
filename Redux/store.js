@@ -2,8 +2,8 @@ import {startTransition} from 'react';
 import {combineReducers, createStore} from 'redux';
 
 const initalState = {
-  User: {Username: 'Vaibhav', token: ''},
-  isLogged: false,
+  User: {Username: 'Vaibhav', token: 'abcd'},
+  // isLogged: true, // getting from User currently
   readTill: Date.now(),
   messages: [
     {
@@ -23,6 +23,23 @@ const initalState = {
       time: Date.now(),
       text: 'hello everyone',
       id: 3,
+    },
+  ],
+  chatBoxes: [
+    {
+      Name: 'Global Group',
+      isGroup: true,
+      id: 125,
+    },
+    {
+      Name: 'Robert Fox',
+      isGroup: false,
+      id: 123,
+    },
+    {
+      Name: 'Esther Howard',
+      isGroup: true,
+      id: 124,
     },
   ],
   modal: false,
@@ -113,6 +130,9 @@ export function selectCurrentUser(state) {
 }
 export function selectUsername(state) {
   return state.User.Username;
+}
+export function selectChatBoxes(state) {
+  return state.chatBoxes;
 }
 
 function UserReducer(state = initalState, action) {

@@ -1,11 +1,10 @@
-import {ScrollView, View, Text, StyleSheet, FlatList} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import React from 'react';
-import Svg, {Path, Use} from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 import {
   selectMessages,
   selectUsername,
   selelectReadTill,
-  store,
 } from '../../Redux/store';
 import {useSelector} from 'react-redux';
 
@@ -19,6 +18,9 @@ export default function ChatBox({ScrollViewRef}) {
   const readTill = useSelector(selelectReadTill);
   const Username = useSelector(selectUsername);
   // console.log(messages);
+
+  let inverted_messages = [...messages];
+  inverted_messages.reverse();
   return (
     <View style={{flex: 1}}>
       {/* <ScrollView style={{paddingHorizontal: 20}} ref={ScrollViewRef}>
@@ -35,7 +37,8 @@ export default function ChatBox({ScrollViewRef}) {
       </ScrollView> */}
       <FlatList
         ref={ScrollViewRef}
-        data={messages}
+        data={inverted_messages}
+        inverted={true}
         renderItem={({item}) => {
           const mes = item;
           console.log(mes);

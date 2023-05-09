@@ -62,15 +62,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  dropShadow: {
-    // width: '100%',
-    // backgroundColor: 'white',
-    // height: 10,
-    // shadowColor: '#400000',
-    // // shadowColor: 'black',
-    // shadowRadius: 20,
-    // elevation: 20,
-  },
   ChatInput: {
     flex: 1,
   },

@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Image,
   Pressable,
@@ -8,8 +8,16 @@ import {
   StatusBar,
 } from 'react-native';
 import MyModal from './Widgets/Modal';
+import {useSelector} from 'react-redux';
+import {selectCurrentUser, selectUsername} from '../Redux/store';
 export default function SplashScreen({navigation}) {
-  const Modalref = useRef(null);
+  const User = useSelector(selectCurrentUser);
+  console.log(User);
+  useEffect(() => {
+    if (User.token) {
+      navigation.navigate('Chats');
+    }
+  });
   return (
     <View>
       <StatusBar backgroundColor="white" color="black" />
@@ -31,8 +39,6 @@ export default function SplashScreen({navigation}) {
           <Text style={styles.btn_text}>Get Started</Text>
         </MyButton>
       </View>
-
-      {/* <MyModal ref={Modalref} /> */}
     </View>
   );
 }

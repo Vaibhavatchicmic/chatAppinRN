@@ -19,7 +19,6 @@ export default function Chats({navigation}) {
         }}
       />
       <ChatBox ScrollViewRef={ScrollViewRef} />
-      <View style={styles.dropShadow} />
       <ChatFooter ScrollViewRef={ScrollViewRef} />
     </View>
   );

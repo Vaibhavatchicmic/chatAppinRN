@@ -9,6 +9,7 @@ import Chats from './Screens/Chat/Chats';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {store} from './Redux/store';
+import Home from './Screens/Home';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,13 +18,14 @@ function App() {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName={SplashScreen}
+          initialRouteName="Home"
           screenOptions={{
             headerShown: false,
           }}>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Chats" component={Chats} />
         </Stack.Navigator>
       </NavigationContainer>
