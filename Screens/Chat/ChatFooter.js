@@ -6,25 +6,52 @@ import {
   TextInput,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import BackButton from '../Widgets/BackButton';
 import {Svg, Path} from 'react-native-svg';
 import ClickIcon from '../Widgets/ClickIcon';
 import styles from './Styles';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {ChatBoxContext} from './context';
+import {selectCurrentUser} from '../../Redux/store';
+import CallApi from '../../Utility/network';
 
 function ChatFooter({ScrollViewRef}) {
-  // console.log(ScrollViewRef);
-
+  const chatBox = useContext(ChatBoxContext);
+  const user = useSelector(selectCurrentUser);
   const [input, setInput] = useState('');
 
   const dispatch = useDispatch();
 
   function handleAddMessage(text) {
+    dispatch(async (dispatch, getState) => {
+      const res = await CallApi(
+        'messages',
+        'POST',
+        {
+          receiver: chatBox.id,
+          receiverType: 'group',
+          data: {text: input},
+        },
+        {onBehalfOf: user.id},
+      );
+      console.log(res);
+      if (res.data) {
+        dispatch({
+          type: 'chatBoxes/messages/added',
+          payload: {
+            senderId: user.id,
+            time: res.data.sentAt,
+          },
+        });
+      }
+    });
     dispatch({
-      type: 'Messages/add',
+      type: 'chatBoxes/messages/added',
       payload: {
+        senderId: user.id,
         text: input,
+        chatBoxId: chatBox.id,
       },
     });
     setInput('');

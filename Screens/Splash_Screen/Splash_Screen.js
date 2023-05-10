@@ -6,16 +6,17 @@ import {
   Text,
   View,
   StatusBar,
+  Alert,
 } from 'react-native';
-import MyModal from './Widgets/Modal';
+import MyModal from '../Widgets/Modal';
 import {useSelector} from 'react-redux';
-import {selectCurrentUser, selectUsername} from '../Redux/store';
+import {selectCurrentUser, selectUsername} from '../../Redux/store';
 export default function SplashScreen({navigation}) {
-  const User = useSelector(selectCurrentUser);
-  console.log(User);
+  const user = useSelector(selectCurrentUser);
+  // console.log("user: ",user);
   useEffect(() => {
-    if (User.token) {
-      navigation.navigate('Chats');
+    if (user) {
+      navigation.navigate('Home');
     }
   });
   return (
@@ -31,11 +32,16 @@ export default function SplashScreen({navigation}) {
       </View>
       <View style={styles.Image}>
         <Image
-          source={require('../Assets/f825d97434ba2e93efa9c9d869e95c6c.png')}
+          source={require('../../Assets/f825d97434ba2e93efa9c9d869e95c6c.png')}
         />
       </View>
       <View style={styles.btnBox}>
-        <MyButton onPress={() => navigation.navigate('Login')}>
+        <MyButton
+          onPress={() => {
+            // Alert.alert('getting started');
+            // console.log('geting started');
+            navigation.navigate('Login');
+          }}>
           <Text style={styles.btn_text}>Get Started</Text>
         </MyButton>
       </View>

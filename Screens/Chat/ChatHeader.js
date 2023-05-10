@@ -1,10 +1,13 @@
 import {StyleSheet, Text, View, Image, StatusBar} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {BackButton2} from '../Widgets/BackButton';
 import {Svg, Path} from 'react-native-svg';
 import ClickIcon from '../Widgets/ClickIcon';
 import styles from './Styles';
+import {ChatBoxContext} from './context';
 function ChatHeader({onBack}) {
+  const chatBox = useContext(ChatBoxContext);
+  // console.log('from chatHeader :', chatBox);
   return (
     <View style={styles.ChatHeader}>
       <StatusBar backgroundColor="#F8F8F8" />
@@ -17,10 +20,14 @@ function ChatHeader({onBack}) {
           <View style={styles.image_box}>
             <Image
               style={styles.Image_icon}
-              source={require('../../Assets/Group.png')}
+              source={
+                chatBox.isGroup
+                  ? require('../../Assets/Group.png')
+                  : require('../../Assets/Person.jpg')
+              }
             />
           </View>
-          <Text>Global Group</Text>
+          <Text>{chatBox.name}</Text>
         </View>
       </View>
       <View style={styles.icons}>

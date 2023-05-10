@@ -3,8 +3,8 @@ import {createStore} from 'redux';
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, TextInput} from 'react-native';
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import Login, {Register} from './Screens/Login';
-import SplashScreen from './Screens/Splash_Screen';
+import Login, {Register} from './Screens/Login/Login';
+import SplashScreen from './Screens/Splash_Screen/Splash_Screen';
 import Chats from './Screens/Chat/Chats';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -18,7 +18,7 @@ function App() {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="SplashScreen"
           screenOptions={{
             headerShown: false,
           }}>

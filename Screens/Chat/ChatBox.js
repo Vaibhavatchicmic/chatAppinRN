@@ -1,12 +1,16 @@
-import {View, Text, StyleSheet, FlatList} from 'react-native';
-import React from 'react';
+import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
+import React, {useContext, useEffect} from 'react';
 import Svg, {Path} from 'react-native-svg';
 import {
+  getMessagesByGroupId,
+  selectCurrentUser,
   selectMessages,
   selectUsername,
   selelectReadTill,
 } from '../../Redux/store';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {ChatBoxContext} from './context';
+import CallApi from '../../Utility/network';
 
 function TimeStamp(time) {
   const date = new Date(time);
@@ -14,12 +18,59 @@ function TimeStamp(time) {
 }
 
 export default function ChatBox({ScrollViewRef}) {
-  const messages = useSelector(selectMessages);
-  const readTill = useSelector(selelectReadTill);
-  const Username = useSelector(selectUsername);
-  // console.log(messages);
-
-  let inverted_messages = [...messages];
+  // const messages = useSelector(getMessagesByGroupId(125));
+  // const readTill = useSelector(selelectReadTill);
+  const chatBox = useContext(ChatBoxContext);
+  const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(async (dispatch, getState) => {
+      const res = await CallApi(`groups/${chatBox.id}/messages`);
+      console.log('messages fetched', res);
+      console.log('dispatching :', {
+        type: 'chatBoxes/messages/get',
+        payload: {
+          messages: res.data.map(mes => {
+            return {
+              senderId: mes.sender,
+              time: mes.sentAt,
+              text: mes.data.text,
+              id: mes.id,
+            };
+          }),
+        },
+      });
+      dispatch({
+        type: 'chatBoxes/messages/get',
+        payload: {
+          chatBoxId: chatBox.id,
+          messages: res.data.map(mes => {
+            return {
+              senderId: mes.sender,
+              time: mes.sentAt,
+              text: mes.data.text,
+              id: mes.id,
+            };
+          }),
+        },
+      });
+    });
+    dispatch(async (dispatch, getState) => {
+      const res = await CallApi(`groups/${chatBox.id}/members`, 'POST', {
+        participants: [user.id],
+      });
+      console.log(
+        'requesting ',
+        `groups/${chatBox.id}/members`,
+        [user.id],
+        res,
+      );
+      if (res.data) {
+        Alert.alert('Added to the group');
+      }
+    });
+  }, []);
+  let inverted_messages = [...chatBox.messages];
   inverted_messages.reverse();
   return (
     <View style={{flex: 1}}>
@@ -36,19 +87,21 @@ export default function ChatBox({ScrollViewRef}) {
         ))}
       </ScrollView> */}
       <FlatList
+        style={{paddingHorizontal: 20}}
         ref={ScrollViewRef}
         data={inverted_messages}
         inverted={true}
         renderItem={({item}) => {
           const mes = item;
-          console.log(mes);
+          // console.log(mes);
           // return <Text>hello</Text>;
+          // console.log('user and message :', user, mes);
           return (
             <ChatText
               text={mes.text}
-              me={Username === mes.sender}
+              me={user.id === mes.senderId}
               time={TimeStamp(mes.time)}
-              isread={mes.time <= readTill}
+              isread={chatBox.readTill >= mes.time}
               key={mes.id}
             />
           );
@@ -148,7 +201,7 @@ const styles = StyleSheet.create({
   },
   ChatTime: {
     backgroundColor: '#F1F1F1',
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 5,
     paddingHorizontal: 15,
     paddingVertical: 3,
@@ -158,6 +211,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   ChatText: {
+    marginTop: 10,
     maxWidth: 250,
     paddingHorizontal: 10,
     paddingVertical: 10,

@@ -1,14 +1,37 @@
 import {View, Text, FlatList, Pressable} from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {selectChatBoxes} from '../../Redux/store';
 import Styles from './Styles';
 import RoundImage from '../Widgets/RoundImage';
 import styles from '../Chat/Styles';
+import CallApi from '../../Utility/network';
 
 const ChatsList = ({navigation}) => {
   const chatBoxes = useSelector(selectChatBoxes);
-  console.log(chatBoxes);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(async (dispatch, getState) => {
+      const res = await CallApi('groups', 'GET');
+      console.log(res);
+      dispatch({
+        type: 'chatBoxes/read',
+        payload: {
+          chatBoxes: res.data.map(group => {
+            return {
+              name: group.name,
+              isGroup: true,
+              icon: group.icon,
+              id: group.guid,
+              // avatar: group.avatar,
+              messages: [],
+            };
+          }),
+        },
+      });
+    });
+  }, []);
+  // console.log('in Chatlist:', chatBoxes);
   return (
     <View style={{paddingHorizontal: 22, flex: 1}}>
       {/* heading */}
@@ -17,14 +40,14 @@ const ChatsList = ({navigation}) => {
       <FlatList
         data={chatBoxes}
         renderItem={({item}) => {
-          // console.log(item);
+          console.log(item);
           return (
             <ChatsBoxElement
-              name={item.Name}
+              name={item.name}
               isGroup={item.isGroup}
               id={item.id}
               onPress={() => {
-                navigation.navigate('Chats');
+                navigation.navigate('Chats', {chatBoxId: item.id});
               }}
             />
           );

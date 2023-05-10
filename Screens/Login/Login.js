@@ -7,59 +7,67 @@ import {
   View,
   StatusBar,
   Alert,
+  KeyboardAvoidingView,
+  Keyboard,
+  ScrollView,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
-import {MyButton} from './Splash_Screen';
-import BackButton from './Widgets/BackButton';
-import MyModal from './Widgets/Modal';
-import CallApi from '../Utility/network';
+import React, {useEffect, useRef, useState} from 'react';
+import {MyButton} from '../Splash_Screen/Splash_Screen';
+import BackButton from '../Widgets/BackButton';
+import MyModal from '../Widgets/Modal';
+import CallApi from '../../Utility/network';
+import {useDispatch} from 'react-redux';
+import useIsKeyBoard from '../../Utility/useIsKeyBoard';
 
 export default function Login({navigation}) {
-  const [inputs, setInputs] = useState({Email: '', Password: ''});
-
+  const [inputs, setInputs] = useState({UserId: '', Password: ''});
+  const isKeyBoard = useIsKeyBoard();
+  const dispatch = useDispatch();
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
       [name]: val,
       abc: 'abc',
     });
-    console.log('input changing', name, val);
-    console.log('inputs :', inputs);
+    // console.log('input changing', name, val);
+    // console.log('inputs :', inputs);
   }
 
-  // function handleLogin(){
-  //   CallApi('users/login', 'POST', body).then(async r => {
-  //     if (r.message) {
-  //       // setModal({isVisible: true, text: r.message});
-  //       // setStatus('Input');
-  //       return;
-  //     } else {
-  //       setStatus('Loaded');
-  //       setToken(r.token);
-  //       navigation.navigate('Home');
-  //     }
-  //   });
-  // }
+  async function handleLogin() {
+    console.log('loging');
+    setInputs({UserId: '', Password: ''});
+    const res = await CallApi('users/' + inputs.UserId);
+    console.log(res);
+    if (res.data) {
+      dispatch({
+        type: 'user/login',
+        payload: {
+          username: res.data.name,
+          id: res.data.uid,
+        },
+      });
+      navigation.navigate('Home');
+    }
+  }
 
   const form_data = {
     Submit_text: 'Login',
     onSubmit() {
       if (inputs.Email === '') {
-        Alert.alert("Email can't be empty");
+        Alert.alert("UserId can't be empty");
         return;
       } else if (inputs.Password === '') {
         Alert.alert("Passward can't be empty");
         return;
       }
-
-      navigation.navigate('Chats');
+      dispatch(handleLogin);
     },
     inputs: [
       {
         id: 1,
-        label: 'Email Address',
-        value: inputs.Email,
-        name: 'Email',
+        label: 'Unique Id',
+        value: inputs.UserId,
+        name: 'UserId',
         handleChangeInputs,
         isSecureEntry: false,
       },
@@ -73,27 +81,30 @@ export default function Login({navigation}) {
       },
     ],
   };
+
   return (
     <View style={styles.con}>
       <StatusBar backgroundColor="#F8F8F8" />
-      {/* Back button */}
-      <View style={styles.Back_btn}>
-        <BackButton
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-      </View>
 
+      {/* Back button */}
+      {!isKeyBoard && (
+        <View style={styles.Back_btn}>
+          <BackButton
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </View>
+      )}
       {/* Abosolute Image */}
       <View style={styles.Tilted_image}>
-        <Image source={require('../Assets/login_img.png')} />
+        <Image source={require('../../Assets/login_img.png')} />
       </View>
 
       {/* text */}
       <View>
         <Text style={styles.Heading}>Hello, Welcome Back</Text>
-        <Text style={styles.Text}>Happy to see you again,to use your</Text>
+        <Text style={styles.Text}>Happy to see you again, to use your</Text>
         <Text style={styles.Text}>account please login first.</Text>
       </View>
 
@@ -112,19 +123,19 @@ export default function Login({navigation}) {
         <Pressable>
           <Image
             // style={styles.Samll_Image}
-            source={require('../Assets/Google.png')}
+            source={require('../../Assets/Google.png')}
           />
         </Pressable>
         <Pressable>
           <Image
             // style={styles.Samll_Image}
-            source={require('../Assets/Apple.png')}
+            source={require('../../Assets/Apple.png')}
           />
         </Pressable>
         <Pressable>
           <Image
             // style={styles.Samll_Image}
-            source={require('../Assets/Facebook.png')}
+            source={require('../../Assets/Facebook.png')}
           />
         </Pressable>
       </View>
@@ -143,7 +154,9 @@ export default function Login({navigation}) {
 }
 
 export function Register({navigation}) {
-  const [inputs, setInputs] = useState({Name: '', Email: '', Password: ''});
+  const [inputs, setInputs] = useState({Name: '', UserId: '', Password: ''});
+  const dispatch = useDispatch();
+  // const isKeyBoard = useIsKeyBoard();
 
   function handleChangeInputs(name, val) {
     setInputs({
@@ -151,28 +164,48 @@ export function Register({navigation}) {
       [name]: val,
       abc: 'abc',
     });
-    console.log('input changing', name, val);
-    console.log('inputs :', inputs);
+
+    // console.log('input changing', name, val);
+    // console.log('inputs :', inputs);
+  }
+  async function handleRegister(dispatch, getState) {
+    console.log('registering');
+    setInputs({Name: '', UserId: '', Password: ''});
+    const res = await CallApi('users', 'POST', {
+      uid: inputs.UserId,
+      name: 'abc',
+    });
+    console.log(res);
+    if (res.data) {
+      dispatch({
+        type: 'user/register',
+        payload: {
+          username: res.data.name,
+          id: res.data.uid,
+        },
+      });
+      navigation.navigate('Home');
+    }
   }
   const form_data = {
     Submit_text: 'Register',
     onSubmit() {
-      navigation.navigate('Chats');
+      dispatch(handleRegister);
     },
     inputs: [
       {
         id: 1,
         label: 'Your username',
         value: inputs.Name,
-        name: 'Username',
+        name: 'Name',
         handleChangeInputs,
         isSecureEntry: false,
       },
       {
         id: 2,
-        label: 'Email Address',
-        value: inputs.Email,
-        name: 'Email',
+        label: 'Unique Id',
+        value: inputs.UserId,
+        name: 'UserId',
         handleChangeInputs,
         isSecureEntry: false,
       },
@@ -187,9 +220,10 @@ export function Register({navigation}) {
     ],
   };
   return (
-    <View style={styles.con}>
+    <ScrollView style={styles.con}>
       <StatusBar backgroundColor="#F8F8F8" />
       {/* Back button */}
+
       <View style={styles.Back_btn}>
         <BackButton
           onPress={() => {
@@ -200,12 +234,14 @@ export function Register({navigation}) {
 
       {/* Abosolute Image */}
       <View style={styles.Tilted_image}>
-        <Image source={require('../Assets/login_img.png')} />
+        <Image source={require('../../Assets/login_img.png')} />
       </View>
 
       {/* text */}
+
       <View>
         <Text style={styles.Heading}>Hello, Start your Journey</Text>
+
         <Text style={styles.Text}>
           Happy to see you, to create your account{' '}
         </Text>
@@ -214,44 +250,14 @@ export function Register({navigation}) {
 
       <Form form_data={form_data} />
 
-      {/* or login with */}
-      {/* <View
-        style={[styles.flexRow, {paddingBottom: 30, paddingHorizontal: 20}]}>
-        <View style={styles.Horizontal_Line} />
-        <Text style={styles.Text}>Or Login With</Text>
-        <View style={styles.Horizontal_Line} />
-      </View> */}
-
-      {/* other login icons */}
-      {/* <View style={[styles.flexRow, {paddingHorizontal: 60}]}>
-        <Pressable>
-          <Image
-            // style={styles.Samll_Image}
-            source={require('../Assets/Google.png')}
-          />
-        </Pressable>
-        <Pressable>
-          <Image
-            // style={styles.Samll_Image}
-            source={require('../Assets/Apple.png')}
-          />
-        </Pressable>
-        <Pressable>
-          <Image
-            // style={styles.Samll_Image}
-            source={require('../Assets/Facebook.png')}
-          />
-        </Pressable>
-      </View> */}
-
       <AltNavigate
         onPress={() => {
           navigation.navigate('Login');
         }}
-        text1="Already Have an account "
+        text1="Already Have an account, "
         text2="Login Here"
       />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -355,7 +361,7 @@ function AltNavigate({onPress, text1, text2}) {
 
 function Form({form_data}) {
   return (
-    <View style={styles.F_padV}>
+    <View style={[styles.F_padV]}>
       {/* <Text>{form_data.heading</Text> */}
       <View style={styles.F_padB2}>
         {form_data.inputs.map(input => (
