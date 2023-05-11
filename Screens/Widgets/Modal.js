@@ -1,7 +1,7 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {forwardRef, useEffect} from 'react';
 import {Svg, Path} from 'react-native-svg';
-import {MyButton} from '../Splash_Screen/Splash_Screen';
+import {MyButton} from '../Splash_Screen/MyButton';
 
 const MyModal_using_Ref = forwardRef(
   ({heading = 'Heading', children, onClose}, ref) => {

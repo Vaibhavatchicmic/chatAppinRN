@@ -32,9 +32,12 @@ function CallApi(
       headers: headres,
       body: body,
     })
-      .then(r => r.json())
+      .then(r => {
+        console.log(r);
+        return r.json();
+      })
       .then(response => {
-        // console.log('response:', response);
+        console.log('response:', response);
         resolve(response);
       })
       .catch(e => {

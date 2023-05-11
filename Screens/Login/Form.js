@@ -1,79 +1,23 @@
-// import React from 'react';
-// import {
-//   View,
-//   Pressable,
-//   Text,
-//   ActivityIndicator,
-//   TextInput,
-//   StyleSheet,
-//   KeyboardAvoidingView,
-// } from 'react-native';
-// import MyModal from '../Widgets/MyModal2';
-// export default function Form({form_data, modal, setModal, showLoader = false}) {
-//   return (
-//     <KeyboardAvoidingView style={styles.flex_con}>
-//       <Text style={styles.heading}>{form_data.heading}</Text>
-//       <View style={styles.container}>
-//         <View style={styles.box}>
-//           <View>
-//             {form_data.inputs.map(input => (
-//               <CustomFormInput
-//                 key={input.id}
-//                 state={input.state}
-//                 name={input.name}
-//                 InputHandler={input.InputHandler}
-//                 isSecureEntry={input.name === 'Password'}
-//               />
-//             ))}
-//           </View>
+import {Text, View} from 'react-native';
+import React from 'react';
+import {MyButton} from '../Splash_Screen/MyButton';
+import {CustomFormInput} from './CustomFormInput';
+import {styles} from './styles';
 
-//           <Pressable
-//             style={styles.Login_button}
-//             onPress={form_data.submits[0].onSubmit}>
-//             <Text style={styles.Login_text}>{form_data.submits[0].name}</Text>
-//           </Pressable>
-//         </View>
-//         <View style={styles.SignUp_con}>
-//           <Text>{form_data.submits[1].desc}</Text>
-//           <Pressable onPress={form_data.submits[1].onSubmit}>
-//             <Text style={styles.SignUp_text}>{form_data.submits[1].name}</Text>
-//           </Pressable>
-//         </View>
-//       </View>
-//       <MyModal modal={modal} setModal={setModal} />
-//       {showLoader && (
-//         <ActivityIndicator
-//           style={[styles.loader]}
-//           size={'large'}
-//           animating={true}
-//         />
-//       )}
-//     </KeyboardAvoidingView>
-//   );
-// }
-
-// const CustomFormInput = ({
-//   state = '',
-//   name = '',
-//   InputHandler = () => {},
-//   isSecureEntry = false,
-// }) => {
-//   return (
-//     <View>
-//       <Text style={styles.text}>{name}</Text>
-//       <TextInput
-//         name={name}
-//         style={styles.input}
-//         value={state}
-//         placeholder={`Enter your ${name}`}
-//         onChangeText={val => {
-//           // console.log('changing text', val, name);
-//           InputHandler(val, name);
-//         }}
-//         secureTextEntry={isSecureEntry}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({});
+export function Form({form_data}) {
+  return (
+    <View style={[styles.F_padV]}>
+      {/* <Text>{form_data.heading</Text> */}
+      <View style={styles.F_padB2}>
+        {form_data.inputs.map(input => (
+          <CustomFormInput key={input.id} {...input} />
+        ))}
+      </View>
+      <MyButton onPress={form_data.onSubmit}>
+        <Text style={[styles.Text2, styles.colorWhite, styles.text_center]}>
+          {form_data.Submit_text}
+        </Text>
+      </MyButton>
+    </View>
+  );
+}

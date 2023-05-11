@@ -1,23 +1,17 @@
-import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
-import React, {useContext, useEffect} from 'react';
+import {View, Text, FlatList, Alert, StyleSheet} from 'react-native';
+import React, {memo, useContext, useEffect, useMemo} from 'react';
 import Svg, {Path} from 'react-native-svg';
-import {
-  getMessagesByGroupId,
-  selectCurrentUser,
-  selectMessages,
-  selectUsername,
-  selelectReadTill,
-} from '../../Redux/store';
 import {useDispatch, useSelector} from 'react-redux';
 import {ChatBoxContext} from './context';
 import CallApi from '../../Utility/network';
+import {selectCurrentUser} from '../../Redux/userReducer';
 
 function TimeStamp(time) {
   const date = new Date(time);
   return `${date.getHours()}:${date.getMinutes()}`;
 }
 
-export default function ChatBox({ScrollViewRef}) {
+export default memo(function ChatBox({ScrollViewRef}) {
   // const messages = useSelector(getMessagesByGroupId(125));
   // const readTill = useSelector(selelectReadTill);
   const chatBox = useContext(ChatBoxContext);
@@ -109,7 +103,7 @@ export default function ChatBox({ScrollViewRef}) {
       />
     </View>
   );
-}
+});
 
 function ChatText({text, me, time = '14:12', isread}) {
   return (
@@ -164,7 +158,6 @@ function ChatNewDay({text}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   Text: {
     fontFamily: 'Poppins',

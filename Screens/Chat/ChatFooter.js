@@ -13,8 +13,8 @@ import ClickIcon from '../Widgets/ClickIcon';
 import styles from './Styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {ChatBoxContext} from './context';
-import {selectCurrentUser} from '../../Redux/store';
 import CallApi from '../../Utility/network';
+import {selectCurrentUser} from '../../Redux/userReducer';
 
 function ChatFooter({ScrollViewRef}) {
   const chatBox = useContext(ChatBoxContext);

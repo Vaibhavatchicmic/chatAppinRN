@@ -1,4 +1,4 @@
-import React, {createContext, useRef} from 'react';
+import React, {createContext, memo, useRef} from 'react';
 import {Pressable, StatusBar, TextInput, View, Text} from 'react-native';
 import BackButton from '../Widgets/BackButton';
 import {Image} from 'react-native-svg';
@@ -10,10 +10,10 @@ import ChatFooter from './ChatFooter';
 import styles from './Styles';
 import {create} from 'react-test-renderer';
 import {useSelector} from 'react-redux';
-import {getChatBoxbyId, getGroupByGroupId} from '../../Redux/store';
 import {ChatBoxContext} from './context';
+import {getChatBoxbyId} from '../../Redux/chatBoxesReducer';
 
-export default function Chats({navigation, route}) {
+export default memo(function Chats({navigation, route}) {
   const chatBoxId = route.params.chatBoxId;
   const chatBox = useSelector(getChatBoxbyId(chatBoxId));
   // console.log('chatBox', chatBox);
@@ -31,4 +31,4 @@ export default function Chats({navigation, route}) {
       </View>
     </ChatBoxContext.Provider>
   );
-}
+});
