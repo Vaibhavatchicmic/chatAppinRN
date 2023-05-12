@@ -17,11 +17,16 @@ import useIsKeyBoard from '../../Utility/useIsKeyBoard';
 import {Form} from './Form';
 import {AltNavigate} from './AltNavigate';
 import {styles} from './styles';
+import MySearchBar from '../Home/MySearchBar';
+import MyStatusBar from '../Widgets/MyStatusBar';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({UserId: '', Password: ''});
   const isKeyBoard = useIsKeyBoard();
   const dispatch = useDispatch();
+  useEffect(() => {
+    console.log('Login mounted');
+  }, []);
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
@@ -31,7 +36,7 @@ export default function Login({navigation}) {
     // console.log('input changing', name, val);
     // console.log('inputs :', inputs);
   }
-
+  // const isKeyBoard = false;
   async function handleLogin() {
     console.log('loging');
     setInputs({UserId: '', Password: ''});
@@ -83,31 +88,40 @@ export default function Login({navigation}) {
 
   return (
     <View style={styles.con}>
-      <StatusBar backgroundColor="#F8F8F8" />
+      <MyStatusBar />
 
-      {/* Back button */}
-      {!isKeyBoard && (
+      <KeyboardAvoidingView behavior="position">
+        {/* Back button */}
         <View style={styles.Back_btn}>
-          <BackButton
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
+          {isKeyBoard ? (
+            <View
+              style={{
+                //do some thing for this style
+                height: 40,
+                width: 40,
+              }}
+            />
+          ) : (
+            <BackButton
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          )}
         </View>
-      )}
-      {/* Abosolute Image */}
-      <View style={styles.Tilted_image}>
-        <Image source={require('../../Assets/login_img.png')} />
-      </View>
+        {/* Abosolute Image */}
+        <View style={styles.Tilted_image}>
+          <Image source={require('../../Assets/login_img.png')} />
+        </View>
+        <View>
+          <Text style={styles.Heading}>Hello, Welcome Back</Text>
+          <Text style={styles.Text}>Happy to see you again, to use your</Text>
+          <Text style={styles.Text}>account please login first.</Text>
+        </View>
 
+        <Form form_data={form_data} />
+      </KeyboardAvoidingView>
       {/* text */}
-      <View>
-        <Text style={styles.Heading}>Hello, Welcome Back</Text>
-        <Text style={styles.Text}>Happy to see you again, to use your</Text>
-        <Text style={styles.Text}>account please login first.</Text>
-      </View>
-
-      <Form form_data={form_data} />
 
       {/* or login with */}
       <View

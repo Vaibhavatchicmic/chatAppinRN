@@ -1,6 +1,6 @@
 //Learning redux fundamentals, not using redux tool kit
 import {createStore} from 'redux';
-import React from 'react';
+import React, {StrictMode} from 'react';
 import {SafeAreaView, StyleSheet, Text, TextInput} from 'react-native';
 import {Provider, useDispatch, useSelector} from 'react-redux';
 import Login from './Screens/Login';
@@ -16,6 +16,7 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    // <StrictMode>
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator
@@ -31,6 +32,7 @@ function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
+    // </StrictMode>
   );
 }
 

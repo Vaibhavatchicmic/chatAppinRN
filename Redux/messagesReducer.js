@@ -1,52 +1,41 @@
+import {act} from 'react-test-renderer';
 import {initalState} from './initalState';
-
+import {createSlice} from '@reduxjs/toolkit';
 let mesId = 1000;
 
-export function messagesReducer(state = initalState.user[0].messages, action) {
-  console.log('dispatch for messages :', action);
-  switch (action.type) {
-    case 'chatBoxes/messages/get':
-      console.log('messages fetched :', action.payload.messages);
-      return action.payload.messages;
-    case 'chatBoxes/messages/added':
-      return [
-        ...state,
-        {
-          senderId: action.payload.senderId,
-          time: action.payload.time || Date.now(),
-          text: action.payload.text,
-          id: action.payload.id || ++mesId,
-        },
-      ];
-    case 'chatBoxes/messages/readByMe':
-      return state;
-    // return state.map(mes => {
-    //   if (action.payload.id === mes.id) {
-    //     return {
-    //       ...mes,
-    //       readByAll: action.payload.readByAll,
-    //     };
-    //   }
-    // });
-    case 'chatBoxes/messages/deleted':
-      return state.filter(mes => {
-        return mes.id !== action.payload.id;
-      });
-    case 'chatBoxes/messages/edited':
-      return state.map(mes => {
-        if (mes.id === action.payload.id) {
-          return {
-            ...mes,
-            text: action.payload.text,
-          };
-        } else {
-          return mes;
-        }
-      });
-    default:
-      return state;
-  }
-}
+const messagesSlice = createSlice({
+  name: 'messages',
+  initialState: initalState.messages,
+  reducers: {
+    //messages of a spedific group
+    fetched: (state, action) => {
+      return (state[action.payload.chatBoxId] = action.payload.messages);
+    },
+    added: (state, action) => {
+      state[action.payload.chatBoxId] = {
+        senderId: action.payload.senderId,
+        time: action.payload.time || Date.now(),
+        text: action.payload.text,
+        id: action.payload.id || ++mesId,
+      };
+    },
+    readByMe: state => state,
+    deleted: (state, action) => {
+      delete state[action.payload.chatBoxId][action.payload.id];
+    },
+    edited: (state, action) => {
+      state[action.payload.chatBoxId][action.payload.id].text =
+        action.payload.text;
+    },
+  },
+});
+
+const messagesReducer = messagesSlice.reducer;
+
+export {messagesReducer};
+
+export const {fetched, added, readByMe, deleted, edited} =
+  messagesSlice.actions;
 
 export function getMessagesByGroupId(id) {
   return function selectMessages2(state) {

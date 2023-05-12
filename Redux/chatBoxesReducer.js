@@ -1,49 +1,39 @@
 import {messagesReducer} from './messagesReducer';
 import {initalState} from './initalState';
+import {createSlice} from '@reduxjs/toolkit';
 
 export let chatId = 1000;
 
-export function chatBoxesReducer(state = initalState.chatBoxes, action) {
-  switch (action.type) {
-    case 'chatBoxes/read':
+const chatBoxesSlice = createSlice({
+  name: 'chatBoxes',
+  initialState: initalState.chatBoxes,
+  reducers: {
+    fetched: (state, action) => {
       return action.payload.chatBoxes;
-    case 'chatBoxes/created':
-      return [
-        ...state,
-        {
-          name: action.payload.name,
-          isGroup: action.payload.isGroup,
-          id: action.payload.id || ++chatId,
-          readTill: action.payload.time || Date.now(),
-          IreadTill: action.payload.time || Date.now(),
-          messages: [],
-        },
-      ];
-    case 'chatBoxes/deleted':
+    },
+    created: (state, action) => {
+      state.push({
+        name: action.payload.name,
+        isGroup: action.payload.isGroup,
+        id: action.payload.id || ++chatId,
+        readTill: action.payload.time || Date.now(),
+        IreadTill: action.payload.time || Date.now(),
+        messages: [],
+      });
+    },
+    deleted: (state, action) => {
       return state.filter(chatBox => {
         return chatBox.id !== action.payload.id;
       });
-    case 'chatBoxes/messages/added':
-    case 'chatBoxes/messages/readByMe':
-    case 'chatBoxes/messages/deleted':
-    case 'chatBoxes/messages/edited':
-    case 'chatBoxes/messages/get':
-      console.log('messages dispatch called action:', action);
-      return state.map(chatBox => {
-        if (chatBox.id === action.payload.chatBoxId) {
-          // console.log('dispatch of messages for group', chatBox);
-          return {
-            ...chatBox,
-            messages: messagesReducer(chatBox.messages, action),
-          };
-        } else {
-          return chatBox;
-        }
-      });
-    default:
-      return state;
-  }
-}
+    },
+  },
+});
+
+const chatBoxesReducer = chatBoxesSlice.reducer;
+export {chatBoxesReducer};
+
+export const {fetched, created, deleted} = chatBoxesSlice.actions;
+
 export function getChatBoxbyId(id) {
   return function selectChatBox(state) {
     return state.chatBoxes.reduce((acc, chatBox) => {

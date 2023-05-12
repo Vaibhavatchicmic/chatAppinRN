@@ -6,6 +6,7 @@ import {selectUsername} from '../../Redux/store';
 import {MyButton} from './MyButton';
 import {styles} from './styles';
 import {selectCurrentUser} from '../../Redux/userReducer';
+import MyStatusBar from '../Widgets/MyStatusBar';
 export default function SplashScreen({navigation}) {
   const user = useSelector(selectCurrentUser);
   // console.log("user: ",user);
@@ -15,8 +16,8 @@ export default function SplashScreen({navigation}) {
     }
   });
   return (
-    <View>
-      <StatusBar backgroundColor="white" color="black" />
+    <View style={{backgroundColor: '#F8F8F8'}}>
+      <MyStatusBar />
       <View style={styles.Text1Box}>
         <Text style={styles.Test1}>Get Closer To</Text>
         <Text style={styles.Test1}>EveryOne</Text>
@@ -40,6 +41,7 @@ export default function SplashScreen({navigation}) {
           <Text style={styles.btn_text}>Get Started</Text>
         </MyButton>
       </View>
+      {/* <MyModal></MyModal> */}
     </View>
   );
 }

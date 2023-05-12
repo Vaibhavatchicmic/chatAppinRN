@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
   },
   con: {
     paddingHorizontal: 22,
+    backgroundColor: '#F8F8F8',
   },
   Samll_Image: {
     height: 40,
@@ -55,6 +56,11 @@ export const styles = StyleSheet.create({
   Tilted_image: {
     position: 'absolute',
     top: 72,
+    right: 0,
+  },
+  Tilted_image2: {
+    position: 'absolute',
+    top: 10,
     right: 0,
   },
   CFI_TextInput: {

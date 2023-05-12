@@ -5,12 +5,13 @@ import {Svg, Path} from 'react-native-svg';
 import ClickIcon from '../Widgets/ClickIcon';
 import styles from './Styles';
 import {ChatBoxContext} from './context';
+import MyStatusBar from '../Widgets/MyStatusBar';
 function ChatHeader({onBack}) {
   const chatBox = useContext(ChatBoxContext);
   // console.log('from chatHeader :', chatBox);
   return (
     <View style={styles.ChatHeader}>
-      <StatusBar backgroundColor="#F8F8F8" />
+      <MyStatusBar />
       {/* Back btn */}
       <BackButton2 onPress={onBack} />
 

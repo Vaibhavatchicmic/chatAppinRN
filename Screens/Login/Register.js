@@ -6,6 +6,7 @@ import {useDispatch} from 'react-redux';
 import {styles} from './styles';
 import {AltNavigate} from './AltNavigate';
 import {Form} from './Form';
+import MyStatusBar from '../Widgets/MyStatusBar';
 
 export function Register({navigation}) {
   const [inputs, setInputs] = useState({Name: '', UserId: '', Password: ''});
@@ -74,7 +75,7 @@ export function Register({navigation}) {
   };
   return (
     <ScrollView style={styles.con}>
-      <StatusBar backgroundColor="#F8F8F8" />
+      <MyStatusBar />
       {/* Back button */}
 
       <View style={styles.Back_btn}>

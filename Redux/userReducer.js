@@ -1,21 +1,36 @@
+import {createSlice} from '@reduxjs/toolkit';
 import {initalState} from './initalState';
+
 let userId = 1000;
 
-export function userReducer(state = initalState.user, action) {
-  switch (action.type) {
-    case 'user/login':
-    case 'user/register':
+const userSlice = createSlice({
+  name: 'user',
+  initialState: initalState.user,
+  reducers: {
+    login: (state, action) => {
       return {
         username: action.payload.username,
         token: action.payload.token,
         id: action.payload.id || ++userId,
       };
-    case 'user/logout':
+    },
+    register: (state, action) => {
+      return {
+        username: action.payload.username,
+        token: action.payload.token,
+        id: action.payload.id || ++userId,
+      };
+    },
+    logout: (state, action) => {
       return null;
-    default:
-      return state;
-  }
-}
+    },
+  },
+});
+const userReducer = userSlice.reducer;
+export const {login, register, logout} = userSlice.actions; //action creater function
+
+export {userReducer};
+
 export function selectCurrentUser(state) {
   return state.user;
 }
