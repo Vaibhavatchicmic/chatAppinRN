@@ -25,8 +25,9 @@ export default StyleSheet.create({
     flexDirection: 'row',
     // width: 'auto',
     paddingHorizontal: 22,
-    paddingVertical: 20,
+    paddingVertical: 25,
     gap: 12,
+    backgroundColor: '#771F98',
   },
   Home: {
     backgroundColor: 'white',

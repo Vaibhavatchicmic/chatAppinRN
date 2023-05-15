@@ -6,7 +6,7 @@ export let chatId = 1000;
 
 const chatBoxesSlice = createSlice({
   name: 'chatBoxes',
-  initialState: initalState.chatBoxes,
+  initialState: initalState.chatBoxes.data,
   reducers: {
     fetched: (state, action) => {
       return action.payload.chatBoxes;

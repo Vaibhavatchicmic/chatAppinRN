@@ -2,7 +2,6 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import MySearchBar from './MySearchBar';
 import ChatsList from './ChatsList';
-import MyNavigator from './MyNavigator';
 import Styles from './Styles';
 
 const Home = ({navigation}) => {
@@ -15,7 +14,6 @@ const Home = ({navigation}) => {
       <ChatsList navigation={navigation} />
 
       {/* Navigator */}
-      <MyNavigator />
     </View>
   );
 };

@@ -6,7 +6,7 @@ import {Svg, Path} from 'react-native-svg';
 const MySearchBar = () => {
   return (
     <View>
-      <StatusBar backgroundColor="white" />
+      <StatusBar backgroundColor="#771F98" barStyle={'light-content'} />
       <View style={Styles.MySearchBar}>
         {/* Search */}
         <View style={Styles.SearchInputCon}>

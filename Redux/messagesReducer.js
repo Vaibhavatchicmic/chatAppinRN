@@ -5,7 +5,7 @@ let mesId = 1000;
 
 const messagesSlice = createSlice({
   name: 'messages',
-  initialState: initalState.messages,
+  initialState: initalState.messages.data,
   reducers: {
     //messages of a spedific group
     fetched: (state, action) => {
