@@ -1,18 +1,20 @@
-import {Image, Text, View, StatusBar, ScrollView} from 'react-native';
+import {Image, Text, View, StatusBar, ScrollView, Alert} from 'react-native';
 import React, {useState} from 'react';
 import BackButton from '../Widgets/BackButton';
 import CallApi from '../../Utility/network';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {styles} from './styles';
 import {AltNavigate} from './AltNavigate';
 import {Form} from './Form';
 import MyStatusBar from '../Widgets/MyStatusBar';
+import {selectCurrentUser} from '../../Redux/userReducer';
 
 export function Register({navigation}) {
   const [inputs, setInputs] = useState({Name: '', UserId: '', Password: ''});
   const dispatch = useDispatch();
   // const isKeyBoard = useIsKeyBoard();
-  const isSubmitting = true;
+  const user = useSelector(selectCurrentUser);
+  const isSubmitting = user.status === 'submitting';
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
@@ -25,11 +27,16 @@ export function Register({navigation}) {
   async function handleRegister(dispatch, getState) {
     console.log('registering');
     setInputs({Name: '', UserId: '', Password: ''});
+
+    dispatch({
+      type: 'user/submit',
+    });
+
     const res = await CallApi('users', 'POST', {
       uid: inputs.UserId,
       name: 'abc',
     });
-    console.log(res);
+    // console.log(res);
     if (res.data) {
       dispatch({
         type: 'user/register',
@@ -37,6 +44,15 @@ export function Register({navigation}) {
           username: res.data.name,
           id: res.data.uid,
         },
+      });
+    } else {
+      Alert.alert('network request failed');
+
+      dispatch({
+        type: 'user/failed',
+        // payload: {
+        //   message: 'network request failed',
+        // },
       });
     }
   }

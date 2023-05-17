@@ -1,7 +1,7 @@
 import {appSchema, tableSchema} from '@nozbe/watermelondb';
 
 export default appSchema({
-  version: 1,
+  version: 2,
   tables: [
     tableSchema({
       name: 'chats',
@@ -24,6 +24,8 @@ export default appSchema({
       columns: [
         {name: 'name', type: 'string'},
         {name: 'token', type: 'string'},
+        {name: 'password', type: 'string'},
+        {name: 'uid', type: 'string'},
       ],
     }),
   ],

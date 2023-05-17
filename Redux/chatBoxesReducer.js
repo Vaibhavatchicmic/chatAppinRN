@@ -4,9 +4,38 @@ import {createSlice} from '@reduxjs/toolkit';
 
 export let chatId = 1000;
 
+const chatBoxes = {
+  status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed',
+  error: null, //'string'
+  data: {
+    //own id indexed
+    125: {
+      name: 'Global Group',
+      isGroup: true,
+      id: 125,
+      readTill: Date.now(),
+      IreadTill: Date.now(),
+    },
+    123: {
+      name: 'Robert Fox',
+      isGroup: false,
+      id: 123,
+      readTill: Date.now(),
+      IreadTill: Date.now(),
+    },
+    124: {
+      name: 'Esther Howard',
+      isGroup: true,
+      id: 124,
+      readTill: Date.now(),
+      IreadTill: Date.now(),
+    },
+  },
+};
+
 const chatBoxesSlice = createSlice({
   name: 'chatBoxes',
-  initialState: initalState.chatBoxes.data,
+  initialState: chatBoxes,
   reducers: {
     fetched: (state, action) => {
       return action.payload.chatBoxes;

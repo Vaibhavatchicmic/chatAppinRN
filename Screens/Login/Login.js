@@ -12,21 +12,25 @@ import React, {useEffect, useRef, useState} from 'react';
 import BackButton from '../Widgets/BackButton';
 import MyModal from '../Widgets/Modal';
 import CallApi from '../../Utility/network';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import useIsKeyBoard from '../../Utility/useIsKeyBoard';
 import {Form} from './Form';
 import {AltNavigate} from './AltNavigate';
 import {styles} from './styles';
 import MySearchBar from '../Home/MySearchBar';
 import MyStatusBar from '../Widgets/MyStatusBar';
+import {selectCurrentUser, setUserInDB_f} from '../../Redux/userReducer';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({UserId: '', Password: ''});
   const isKeyBoard = useIsKeyBoard();
   const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
   useEffect(() => {
     console.log('Login mounted');
+    // if(user.status==="")
   }, []);
+
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
@@ -39,23 +43,45 @@ export default function Login({navigation}) {
   // const isKeyBoard = false;
   async function handleLogin() {
     console.log('loging');
-    setInputs({UserId: '', Password: ''});
+
+    dispatch({
+      type: 'user/submit',
+    });
+
     const res = await CallApi('users/' + inputs.UserId);
-    console.log(res);
+    // console.log(res);
     if (res.data) {
+      dispatch(
+        setUserInDB_f({
+          name: res.data.name,
+          token: '',
+          password: inputs.Password,
+          uid: res.data.uid,
+        }),
+      );
+      //   {
+      //   type: 'user/login',
+      //   payload: {
+      //     username: res.data.name,
+      //     id: res.data.uid,
+      //   },
+      // }
+      setInputs({UserId: '', Password: ''});
+    } else {
+      Alert.alert('network request failed');
+
       dispatch({
-        type: 'user/login',
-        payload: {
-          username: res.data.name,
-          id: res.data.uid,
-        },
+        type: 'user/failed',
+        // payload: {
+        //   message: 'network request failed',
+        // },
       });
     }
   }
 
   const form_data = {
     Submit_text: 'Login',
-    isSubmitting: false,
+    isSubmitting: user.status === 'submitting',
     onSubmit() {
       if (inputs.Email === '') {
         Alert.alert("UserId can't be empty");

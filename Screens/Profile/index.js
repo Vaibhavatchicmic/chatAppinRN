@@ -1,18 +1,22 @@
 import React from 'react';
 import {View, Text, Pressable, ScrollView, StatusBar} from 'react-native';
 import RoundImage from '../Widgets/RoundImage';
-import {Svg, Path, G} from 'react-native-svg';
+import {Svg, Path} from 'react-native-svg';
 import {styles} from './styles';
 import ClickElement from './ClickElement';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {remUserFromDB_f, selectCurrentUser} from '../../Redux/userReducer';
 
 const Profile = ({navigation}) => {
-  const name = 'Lonnie Murphy';
   const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+  console.log(user);
+  const name = user.username;
   function handleSignOut() {
-    dispatch({
-      type: 'user/logout',
-    });
+    dispatch(remUserFromDB_f());
+    // {
+    //   type: 'user/logout',
+    // }
   }
   return (
     <View style={styles.Profile}>

@@ -36,4 +36,6 @@ export class User extends Model {
 
   @field('name') name;
   @text('token') token;
+  @text('password') password;
+  @text('uid') uid;
 }

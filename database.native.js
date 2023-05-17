@@ -28,16 +28,39 @@ const adapter = new SQLiteAdapter({
 // Then, make a Watermelon database from it!
 const database = new Database({
   adapter,
-  modelClasses: [Chat],
+  modelClasses: [Chat, Messages, User],
 });
 
 database.write(async () => {
-  // const chatboxes = database.get('chats');
-  // await chatboxes.create(chatbox => {
-  //   chatbox.name = 'GlobalChat';
-  //   chatbox.is_group = false;
-  // });
-
-  const chats = await database.get('chats').query().fetch();
-  console.log(chats);
+  // let user = {
+  //   name: '',
+  //   token: '',
+  //   password: '',
+  //   uid: '',
+  // };
+  // await database.localStorage.set('CurrentUser', JSON.stringify(user));
+  // await db_setCurrentUser({name: 'fdas', token: '', password: '', uid: ''});
+  // const user = await db_getCurrentUser();
+  // console.log(user);
+  // database.localStorage.remove('CurrentUser');
 });
+
+export async function db_setCurrentUser({name, token, password, uid}) {
+  let user = {
+    name: name,
+    token: token,
+    password: password,
+    uid: uid,
+  };
+  await database.localStorage.set('CurrentUser', JSON.stringify(user));
+}
+export async function db_getCurrentUser() {
+  const user = await database.localStorage.get('CurrentUser');
+  if (!user) {
+    return null;
+  }
+  return JSON.parse(user);
+}
+export async function db_remCurrentUser() {
+  await database.localStorage.remove('CurrentUser');
+}

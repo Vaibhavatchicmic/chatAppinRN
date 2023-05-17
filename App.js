@@ -15,6 +15,7 @@ function App() {
 }
 
 import './database.native';
+import './Utility/CometChat';
 
 // const styles = StyleSheet.create({
 //   input: {
