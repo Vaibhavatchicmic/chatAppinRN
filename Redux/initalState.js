@@ -1,9 +1,9 @@
 export const initalState = {
   user: {
-    status: 'idle', // 'no_user'|'idle' | 'login_submitting' | 'login_succeeded' | 'login_failed'| 'register_submitting' |'register_succeeded','register_failed',
-    username: 'Vaibhav',
-    token: 'abcd',
-    id: 1,
+    status: 'no_user', // 'no_user'|'idle' | 'login_submitting' | 'login_succeeded' | 'login_failed'| 'register_submitting' |'register_succeeded','register_failed',
+    // username: 'Vaibhav',
+    // token: 'abcd',
+    // id: 1,
   },
   chatBoxes: {
     status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed',
@@ -85,6 +85,10 @@ export const initalState = {
         },
       ],
     },
+  },
+  navigation: {
+    screens: [],
+    currentScreen: '',
   },
   modal: false,
   alert: false,

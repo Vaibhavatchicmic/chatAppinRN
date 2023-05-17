@@ -12,13 +12,13 @@ export function Register({navigation}) {
   const [inputs, setInputs] = useState({Name: '', UserId: '', Password: ''});
   const dispatch = useDispatch();
   // const isKeyBoard = useIsKeyBoard();
+  const isSubmitting = true;
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
       [name]: val,
       abc: 'abc',
     });
-
     // console.log('input changing', name, val);
     // console.log('inputs :', inputs);
   }
@@ -38,11 +38,11 @@ export function Register({navigation}) {
           id: res.data.uid,
         },
       });
-      navigation.navigate('Home');
     }
   }
   const form_data = {
     Submit_text: 'Register',
+    isSubmitting,
     onSubmit() {
       dispatch(handleRegister);
     },
@@ -78,7 +78,7 @@ export function Register({navigation}) {
       <MyStatusBar />
       {/* Back button */}
 
-      <View style={styles.Back_btn}>
+      <View style={[styles.Back_btn, styles.p_h]}>
         <BackButton
           onPress={() => {
             navigation.goBack();
@@ -93,7 +93,7 @@ export function Register({navigation}) {
 
       {/* text */}
 
-      <View>
+      <View style={styles.p_h}>
         <Text style={styles.Heading}>Hello, Start your Journey</Text>
 
         <Text style={styles.Text}>

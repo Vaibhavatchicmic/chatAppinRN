@@ -1,4 +1,4 @@
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, ActivityIndicator} from 'react-native';
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import Styles from './Styles';
@@ -31,28 +31,38 @@ const ChatsList = ({navigation}) => {
       });
     });
   }, []);
+  const isLoading = false;
   // console.log('in Chatlist:', chatBoxes);
   return (
     <View style={{paddingHorizontal: 22, flex: 1}}>
       {/* heading */}
-      <Text style={Styles.heading}>Chats</Text>
-      {/* ChatBoxList */}
-      <FlatList
-        data={chatBoxes}
-        renderItem={({item}) => {
-          console.log(item);
-          return (
-            <ChatsBoxElement
-              name={item.name}
-              isGroup={item.isGroup}
-              id={item.id}
-              onPress={() => {
-                navigation.navigate('Chats', {chatBoxId: item.id});
-              }}
-            />
-          );
-        }}
-      />
+
+      {isLoading ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size="large" color="#771F98" />
+        </View>
+      ) : (
+        <>
+          <Text style={Styles.heading}>Chats</Text>
+          {/* ChatBoxList */}
+          <FlatList
+            data={chatBoxes}
+            renderItem={({item}) => {
+              console.log(item);
+              return (
+                <ChatsBoxElement
+                  name={item.name}
+                  isGroup={item.isGroup}
+                  id={item.id}
+                  onPress={() => {
+                    navigation.navigate('Chats', {chatBoxId: item.id});
+                  }}
+                />
+              );
+            }}
+          />
+        </>
+      )}
     </View>
   );
 };

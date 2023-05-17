@@ -11,7 +11,7 @@ export default function SplashScreen({navigation}) {
   const user = useSelector(selectCurrentUser);
   // console.log("user: ",user);
   useEffect(() => {
-    if (user) {
+    if (user.status == 'idle') {
       navigation.navigate('Home');
     }
   });

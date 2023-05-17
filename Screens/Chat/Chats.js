@@ -14,20 +14,21 @@ import {ChatBoxContext} from './context';
 import {getChatBoxbyId} from '../../Redux/chatBoxesReducer';
 
 export default memo(function Chats({navigation, route}) {
-  const chatBoxId = route.params.chatBoxId;
-  const chatBox = useSelector(getChatBoxbyId(chatBoxId));
+  // const chatBoxId = route.params.chatBoxId;
+  // const chatBox = useSelector(getChatBoxbyId(chatBoxId));
+  const chatBox = [];
   // console.log('chatBox', chatBox);
   const ScrollViewRef = useRef(null);
   return (
     <ChatBoxContext.Provider value={chatBox}>
       <View backgroundColor="white" style={{flex: 1}}>
-        <ChatHeader
+        {/* <ChatHeader
           onBack={() => {
             navigation.goBack();
           }}
         />
         <ChatBox ScrollViewRef={ScrollViewRef} />
-        <ChatFooter ScrollViewRef={ScrollViewRef} />
+        <ChatFooter ScrollViewRef={ScrollViewRef} /> */}
       </View>
     </ChatBoxContext.Provider>
   );

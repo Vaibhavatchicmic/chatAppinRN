@@ -65,6 +65,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
+    paddingTop: 10,
     fontFamily: 'Poppins',
     fontSize: 20,
     color: '#771f98',

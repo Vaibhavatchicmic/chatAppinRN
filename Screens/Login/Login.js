@@ -50,12 +50,12 @@ export default function Login({navigation}) {
           id: res.data.uid,
         },
       });
-      navigation.navigate('Home');
     }
   }
 
   const form_data = {
     Submit_text: 'Login',
+    isSubmitting: false,
     onSubmit() {
       if (inputs.Email === '') {
         Alert.alert("UserId can't be empty");
@@ -92,7 +92,7 @@ export default function Login({navigation}) {
 
       <KeyboardAvoidingView behavior="position">
         {/* Back button */}
-        <View style={styles.Back_btn}>
+        <View style={[styles.Back_btn, styles.p_h]}>
           {isKeyBoard ? (
             <View
               style={{
@@ -110,10 +110,10 @@ export default function Login({navigation}) {
           )}
         </View>
         {/* Abosolute Image */}
-        <View style={styles.Tilted_image}>
+        <View style={[styles.Tilted_image]}>
           <Image source={require('../../Assets/login_img.png')} />
         </View>
-        <View>
+        <View style={styles.p_h}>
           <Text style={styles.Heading}>Hello, Welcome Back</Text>
           <Text style={styles.Text}>Happy to see you again, to use your</Text>
           <Text style={styles.Text}>account please login first.</Text>

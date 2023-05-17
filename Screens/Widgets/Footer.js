@@ -7,7 +7,7 @@ const Footer = ({children, style}) => {
 
 export default Footer;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   Footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -26,5 +26,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     // zIndex: 100,
     paddingHorizontal: 10,
+    // backgroundColor: 'red',
   },
 });

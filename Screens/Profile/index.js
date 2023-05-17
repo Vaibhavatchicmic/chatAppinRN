@@ -4,9 +4,16 @@ import RoundImage from '../Widgets/RoundImage';
 import {Svg, Path, G} from 'react-native-svg';
 import {styles} from './styles';
 import ClickElement from './ClickElement';
+import {useDispatch} from 'react-redux';
 
-const Profile = () => {
+const Profile = ({navigation}) => {
   const name = 'Lonnie Murphy';
+  const dispatch = useDispatch();
+  function handleSignOut() {
+    dispatch({
+      type: 'user/logout',
+    });
+  }
   return (
     <View style={styles.Profile}>
       <StatusBar backgroundColor={'#771F98'} barStyle={'light-content'} />
@@ -49,7 +56,7 @@ const Profile = () => {
         <ClickElement text={'Change Password'} />
         <ClickElement text={'Support'} />
         <ClickElement text={'Privacy Policy'} />
-        <ClickElement text={'Sign Out'} />
+        <ClickElement text={'Sign Out'} onPress={handleSignOut} />
       </ScrollView>
     </View>
   );
