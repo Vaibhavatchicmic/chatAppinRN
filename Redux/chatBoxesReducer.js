@@ -38,7 +38,7 @@ const chatBoxesSlice = createSlice({
   initialState: chatBoxes,
   reducers: {
     fetched: (state, action) => {
-      return action.payload.chatBoxes;
+      state.data = action.payload.chatBoxes;
     },
     created: (state, action) => {
       state.push({
@@ -65,15 +65,10 @@ export const {fetched, created, deleted} = chatBoxesSlice.actions;
 
 export function getChatBoxbyId(id) {
   return function selectChatBox(state) {
-    return state.chatBoxes.reduce((acc, chatBox) => {
-      if (chatBox.id === id) {
-        acc = chatBox;
-      }
-      // console.log('acc is', acc);
-      return acc;
-    }, []);
+    console.log('first chatbox', state.chatBoxes.data[0]);
+    return state.chatBoxes.data[0];
   };
 }
 export function selectChatBoxes(state) {
-  return state.chatBoxes;
+  return state.chatBoxes.data;
 }

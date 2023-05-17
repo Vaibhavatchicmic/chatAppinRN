@@ -1,18 +1,24 @@
 import {act} from 'react-test-renderer';
 import {initalState} from './initalState';
 import {createSlice} from '@reduxjs/toolkit';
+import {action} from '@nozbe/watermelondb/decorators';
+import {CometChat} from '@cometchat-pro/react-native-chat';
 let mesId = 1000;
 
 const messagesSlice = createSlice({
   name: 'messages',
-  initialState: initalState.messages.data,
+  initialState: initalState.messages,
   reducers: {
     //messages of a spedific group
     fetched: (state, action) => {
-      return (state[action.payload.chatBoxId] = action.payload.messages);
+      state.data[action.payload.chatBoxId] = action.payload.messages;
+    },
+    init: (state, action) => {
+      console.log('initiating messages for', action.payload.chatBoxId, state);
+      state.data[action.payload.chatBoxId] = [];
     },
     added: (state, action) => {
-      state[action.payload.chatBoxId] = {
+      state.data[action.payload.chatBoxId] = {
         senderId: action.payload.senderId,
         time: action.payload.time || Date.now(),
         text: action.payload.text,
@@ -21,10 +27,10 @@ const messagesSlice = createSlice({
     },
     readByMe: state => state,
     deleted: (state, action) => {
-      delete state[action.payload.chatBoxId][action.payload.id];
+      delete state.data[action.payload.chatBoxId][action.payload.id];
     },
     edited: (state, action) => {
-      state[action.payload.chatBoxId][action.payload.id].text =
+      state.data[action.payload.chatBoxId][action.payload.id].text =
         action.payload.text;
     },
   },
@@ -39,13 +45,30 @@ export const {fetched, added, readByMe, deleted, edited} =
 
 export function getMessagesByGroupId(id) {
   return function selectMessages2(state) {
-    // console.log('for id and state', id, state);
-    return state.chatBoxes.reduce((acc, chatBox) => {
-      if (chatBox.id === id) {
-        acc = chatBox.messages;
-      }
-      // console.log('acc is', acc);
-      return acc;
-    }, []);
+    return state.messages.data[id];
   };
+}
+
+export async function fetchGroupMessages(GUID, conv_id) {
+  return async (dispatch, getState) => {
+    let limit = 30;
+    let messagesRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(GUID)
+      .setLimit(limit)
+      .build();
+
+    const gMessages = [];
+    messagesRequest.fetchPrevious().then(
+      messages => {
+        messages.forEach(message => {
+          dispatch({type: ''});
+        });
+        console.log('Message list fetched:', messages);
+      },
+      error => {
+        console.log('Message fetching failed with error:', error);
+      },
+    );
+  };
+  // let GUID = 'GUID';
 }

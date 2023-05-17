@@ -2,6 +2,7 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import {userReducer} from './userReducer';
 import {chatBoxesReducer} from './chatBoxesReducer';
 import {messagesReducer} from './messagesReducer';
+import {currentChatBoxReducer} from './currentChatBoxReducer';
 // Actions:
 // chatBoxes/created
 // chatBoxes/edited
@@ -28,6 +29,7 @@ const configureCustomStore = () => {
     user: userReducer,
     chatBoxes: chatBoxesReducer,
     messages: messagesReducer,
+    currentChatBox: currentChatBoxReducer,
   });
 
   const store = configureStore({

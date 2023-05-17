@@ -5,66 +5,78 @@ import {useDispatch, useSelector} from 'react-redux';
 import {ChatBoxContext} from './context';
 import CallApi from '../../Utility/network';
 import {selectCurrentUser} from '../../Redux/userReducer';
+import {getChatBoxbyId} from '../../Redux/chatBoxesReducer';
+import {selectCurrentChatBox} from '../../Redux/currentChatBoxReducer';
+import {
+  fetchGroupMessages,
+  getMessagesByGroupId,
+} from '../../Redux/messagesReducer';
 
 function TimeStamp(time) {
   const date = new Date(time);
   return `${date.getHours()}:${date.getMinutes()}`;
 }
 
-export default memo(function ChatBox({ScrollViewRef}) {
-  // const messages = useSelector(getMessagesByGroupId(125));
-  // const readTill = useSelector(selelectReadTill);
-  const chatBox = useContext(ChatBoxContext);
+export default function ChatBox({ScrollViewRef}) {
   const user = useSelector(selectCurrentUser);
+  const chatBox = useSelector(
+    getChatBoxbyId(useSelector(selectCurrentChatBox)),
+  );
+  const messages = useSelector(getMessagesByGroupId(125));
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(async (dispatch, getState) => {
-      const res = await CallApi(`groups/${chatBox.id}/messages`);
-      console.log('messages fetched', res);
-      console.log('dispatching :', {
-        type: 'chatBoxes/messages/get',
-        payload: {
-          messages: res.data.map(mes => {
-            return {
-              senderId: mes.sender,
-              time: mes.sentAt,
-              text: mes.data.text,
-              id: mes.id,
-            };
-          }),
-        },
-      });
-      dispatch({
-        type: 'chatBoxes/messages/get',
-        payload: {
-          chatBoxId: chatBox.id,
-          messages: res.data.map(mes => {
-            return {
-              senderId: mes.sender,
-              time: mes.sentAt,
-              text: mes.data.text,
-              id: mes.id,
-            };
-          }),
-        },
-      });
-    });
-    dispatch(async (dispatch, getState) => {
-      const res = await CallApi(`groups/${chatBox.id}/members`, 'POST', {
-        participants: [user.id],
-      });
-      console.log(
-        'requesting ',
-        `groups/${chatBox.id}/members`,
-        [user.id],
-        res,
-      );
-      if (res.data) {
-        Alert.alert('Added to the group');
-      }
-    });
-  }, []);
-  let inverted_messages = [...chatBox.messages];
+  console.log('chatbox  akd:', chatBox);
+  // useEffect(() => {
+  //   dispatch(fetchGroupMessages());
+  // }, []);
+  // useEffect(() => {
+  //   dispatch(async (dispatch, getState) => {
+  //     const res = await CallApi(`groups/${chatBox.id}/messages`);
+  //     console.log('messages fetched', res);
+  //     console.log('dispatching :', {
+  //       type: 'chatBoxes/messages/get',
+  //       payload: {
+  //         messages: res.data.map(mes => {
+  //           return {
+  //             senderId: mes.sender,
+  //             time: mes.sentAt,
+  //             text: mes.data.text,
+  //             id: mes.id,
+  //           };
+  //         }),
+  //       },
+  //     });
+  //     dispatch({
+  //       type: 'chatBoxes/messages/get',
+  //       payload: {
+  //         chatBoxId: chatBox.id,
+  //         messages: res.data.map(mes => {
+  //           return {
+  //             senderId: mes.sender,
+  //             time: mes.sentAt,
+  //             text: mes.data.text,
+  //             id: mes.id,
+  //           };
+  //         }),
+  //       },
+  //     });
+  //   });
+  //   dispatch(async (dispatch, getState) => {
+  //     const res = await CallApi(`groups/${chatBox.id}/members`, 'POST', {
+  //       participants: [user.id],
+  //     });
+  //     console.log(
+  //       'requesting ',
+  //       `groups/${chatBox.id}/members`,
+  //       [user.id],
+  //       res,
+  //     );
+  //     if (res.data) {
+  //       Alert.alert('Added to the group');
+  //     }
+  //   });
+  // }, []);
+  // let inverted_messages = [...chatBox.messages];
+  let inverted_messages = [];
   inverted_messages.reverse();
   return (
     <View style={{flex: 1}}>
@@ -103,7 +115,7 @@ export default memo(function ChatBox({ScrollViewRef}) {
       />
     </View>
   );
-});
+}
 
 function ChatText({text, me, time = '14:12', isread}) {
   return (

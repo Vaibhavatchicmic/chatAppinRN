@@ -6,28 +6,45 @@ import styles from '../Chat/Styles';
 import CallApi from '../../Utility/network';
 import {ChatsBoxElement} from './ChatsBoxElement';
 import {selectChatBoxes} from '../../Redux/chatBoxesReducer';
+import {CometChat} from '@cometchat-pro/react-native-chat';
+import {fetchGroupMessages} from '../../Redux/messagesReducer';
 
 const ChatsList = ({navigation}) => {
   const chatBoxes = useSelector(selectChatBoxes);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(async (dispatch, getState) => {
-      const res = await CallApi('groups', 'GET');
-      console.log(res);
+      let limit = 30;
+      let groupsRequest = new CometChat.GroupsRequestBuilder()
+        .setLimit(limit)
+        .joinedOnly(true)
+        .build();
+      const res = await groupsRequest.fetchNext();
+      // console.log(res);
       dispatch({
-        type: 'chatBoxes/read',
+        type: 'chatBoxes/fetched',
         payload: {
-          chatBoxes: res.data.map(group => {
+          chatBoxes: res.map(group => {
             return {
               name: group.name,
               isGroup: true,
               icon: group.icon,
               id: group.guid,
+              conv_id: group.conversationId,
               // avatar: group.avatar,
               messages: [],
             };
           }),
         },
+      });
+      res.forEach(element => {
+        console.log(element);
+        dispatch({
+          type: 'messages/init',
+          payload: {
+            chatBoxId: element.conversationId,
+          },
+        });
       });
     });
   }, []);
@@ -48,14 +65,21 @@ const ChatsList = ({navigation}) => {
           <FlatList
             data={chatBoxes}
             renderItem={({item}) => {
-              console.log(item);
+              // console.log(item);
               return (
                 <ChatsBoxElement
                   name={item.name}
                   isGroup={item.isGroup}
                   id={item.id}
                   onPress={() => {
-                    navigation.navigate('Chats', {chatBoxId: item.id});
+                    console.log('chatBox selected ', item.id);
+                    dispatch({
+                      type: 'currentChatBox/set',
+                      payload: {
+                        id: item.id,
+                      },
+                    });
+                    navigation.navigate('Chats');
                   }}
                 />
               );

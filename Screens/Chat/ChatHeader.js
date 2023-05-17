@@ -6,8 +6,13 @@ import ClickIcon from '../Widgets/ClickIcon';
 import styles from './Styles';
 import {ChatBoxContext} from './context';
 import MyStatusBar from '../Widgets/MyStatusBar';
+import {useSelector} from 'react-redux';
+import {selectCurrentChatBox} from '../../Redux/currentChatBoxReducer';
+import {getChatBoxbyId} from '../../Redux/chatBoxesReducer';
 function ChatHeader({onBack}) {
-  const chatBox = useContext(ChatBoxContext);
+  const chatBox = useSelector(
+    getChatBoxbyId(useSelector(selectCurrentChatBox)),
+  );
   // console.log('from chatHeader :', chatBox);
   return (
     <View style={styles.ChatHeader}>

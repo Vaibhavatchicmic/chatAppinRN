@@ -90,6 +90,7 @@ export const initalState = {
     screens: [],
     currentScreen: '',
   },
+  currentChatBox: 123, //number of null
   modal: false,
   alert: false,
 };

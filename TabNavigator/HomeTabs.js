@@ -20,9 +20,9 @@ export function MyTabs() {
         tabBarStyle: styles.Footer,
         backgroundColor: 'red',
       }}
-      initialRouteName="Chats">
+      initialRouteName="ChatBoxes">
       <Tab.Screen
-        name="Chats"
+        name="ChatBoxes"
         component={Home}
         options={{
           tabBarLabel: 'asdf',

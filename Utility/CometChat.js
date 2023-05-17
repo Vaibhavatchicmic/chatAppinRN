@@ -10,7 +10,7 @@ let appSetting = new CometChat.AppSettingsBuilder()
 CometChat.init(appID, appSetting).then(
   () => {
     console.log('Initialization completed successfully');
-    messagesListener();
+    // messagesListener();
   },
   error => {
     console.log('Initialization failed with error:', error);
@@ -43,3 +43,5 @@ function stopMessagesListener() {
 
   CometChat.removeMessageListener(listenerID);
 }
+
+export const AUTH_KEY = 'e8be36c3e839fed6b6147c7106d1eedb81a19659';

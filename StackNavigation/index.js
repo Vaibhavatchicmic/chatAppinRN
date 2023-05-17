@@ -10,6 +10,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useDispatch, useSelector} from 'react-redux';
 import {getUserFromDB_f, selectCurrentUser} from '../Redux/userReducer';
 import {MyTabs} from '../TabNavigator/HomeTabs';
+import {selectCurrentChatBox} from '../Redux/currentChatBoxReducer';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export const MyStack = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('getting user from DB');
     dispatch(getUserFromDB_f());
   }, [dispatch]);
   return (
@@ -34,10 +36,10 @@ export const MyStack = () => {
         </Stack.Navigator>
       ) : (
         <Stack.Navigator
-          initialRouteName="Home"
           screenOptions={{
             headerShown: false,
           }}>
+          {}
           <Stack.Screen name="Home" component={MyTabs} />
           <Stack.Screen name="Chats" component={Chats} />
         </Stack.Navigator>

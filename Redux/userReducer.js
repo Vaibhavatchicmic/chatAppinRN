@@ -6,6 +6,7 @@ import {
   db_remCurrentUser,
   db_setCurrentUser,
 } from '../database.native';
+import {CometChat} from '@cometchat-pro/react-native-chat';
 
 let userId = 1000;
 
@@ -21,12 +22,10 @@ const userSlice = createSlice({
   initialState: user,
   reducers: {
     login: (state, action) => {
-      return {
-        status: 'idle',
-        username: action.payload.username,
-        token: action.payload.token,
-        id: action.payload.id || ++userId,
-      };
+      state.status = 'idle';
+      state.username = action.payload.username;
+      state.token = action.payload.token;
+      state.id = action.payload.id || ++userId;
     },
     register: (state, action) => {
       return {
@@ -81,22 +80,40 @@ export const getUserFromDB_f = () => async (dispatch, getState) => {
       },
     });
   }
-  // console.log('user not in db');
+  console.log('user in db', user);
 };
 
-export const setUserInDB_f = user => async (dispatch, getState) => {
+export const setUserInDB_f = (user, type) => async (dispatch, getState) => {
+  console.log('setting user in DB', user);
   await db_setCurrentUser(user);
-  dispatch({
-    type: 'user/login',
-    payload: {
-      username: user.name,
-      id: user.uid,
-    },
-  });
+  if (type === 'register') {
+    dispatch({
+      type: 'user/register',
+      payload: {
+        username: user.name,
+        id: user.uid,
+        token: user.token,
+      },
+    });
+  } else {
+    console.log('logging', user);
+    dispatch({
+      type: 'user/login',
+      payload: {
+        username: user.name,
+        id: user.uid,
+        token: user.token,
+      },
+    });
+  }
 };
 
 export const remUserFromDB_f = () => async (dispatch, getState) => {
   await db_remCurrentUser();
+  const user0 = await CometChat.getLoggedinUser();
+  if (user0) {
+    await CometChat.logout();
+  }
   dispatch({
     type: 'user/logout',
   });

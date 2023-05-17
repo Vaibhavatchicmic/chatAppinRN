@@ -20,6 +20,8 @@ import {styles} from './styles';
 import MySearchBar from '../Home/MySearchBar';
 import MyStatusBar from '../Widgets/MyStatusBar';
 import {selectCurrentUser, setUserInDB_f} from '../../Redux/userReducer';
+import {CometChat} from '@cometchat-pro/react-native-chat';
+import {AUTH_KEY} from '../../Utility/CometChat';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({UserId: '', Password: ''});
@@ -48,34 +50,43 @@ export default function Login({navigation}) {
       type: 'user/submit',
     });
 
-    const res = await CallApi('users/' + inputs.UserId);
-    // console.log(res);
-    if (res.data) {
+    const user = await CometChat.getLoggedinUser();
+
+    if (!user) {
+      console.log('trying to login');
+      try {
+        const res = await CometChat.login(inputs.UserId, AUTH_KEY);
+        console.log(res);
+        dispatch(
+          setUserInDB_f({
+            name: res.data.name,
+            token: res.data.authToken,
+            password: inputs.Password,
+            uid: res.data.uid,
+          }),
+        );
+        setInputs({UserId: '', Password: ''});
+      } catch (e) {
+        Alert.alert('network request failed');
+
+        dispatch({
+          type: 'user/failed',
+          // payload: {
+          //   message: 'network request failed',
+          // },
+        });
+      }
+    } else {
+      console.log('user already logged', user);
       dispatch(
         setUserInDB_f({
-          name: res.data.name,
-          token: '',
+          name: user.name,
+          token: user.authToken,
           password: inputs.Password,
-          uid: res.data.uid,
+          uid: user.uid,
         }),
       );
-      //   {
-      //   type: 'user/login',
-      //   payload: {
-      //     username: res.data.name,
-      //     id: res.data.uid,
-      //   },
-      // }
       setInputs({UserId: '', Password: ''});
-    } else {
-      Alert.alert('network request failed');
-
-      dispatch({
-        type: 'user/failed',
-        // payload: {
-        //   message: 'network request failed',
-        // },
-      });
     }
   }
 

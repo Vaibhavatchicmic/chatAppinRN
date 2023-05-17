@@ -8,6 +8,7 @@ import {AltNavigate} from './AltNavigate';
 import {Form} from './Form';
 import MyStatusBar from '../Widgets/MyStatusBar';
 import {selectCurrentUser} from '../../Redux/userReducer';
+import {setUserInDB_f} from '../../Redux/userReducer';
 
 export function Register({navigation}) {
   const [inputs, setInputs] = useState({Name: '', UserId: '', Password: ''});
@@ -26,7 +27,6 @@ export function Register({navigation}) {
   }
   async function handleRegister(dispatch, getState) {
     console.log('registering');
-    setInputs({Name: '', UserId: '', Password: ''});
 
     dispatch({
       type: 'user/submit',
@@ -34,17 +34,30 @@ export function Register({navigation}) {
 
     const res = await CallApi('users', 'POST', {
       uid: inputs.UserId,
-      name: 'abc',
+      name: inputs.Name,
+      withAuthToken: 1,
     });
     // console.log(res);
     if (res.data) {
-      dispatch({
-        type: 'user/register',
-        payload: {
-          username: res.data.name,
-          id: res.data.uid,
-        },
-      });
+      dispatch(
+        setUserInDB_f(
+          {
+            name: res.data.name,
+            token: res.data.authToken,
+            password: inputs.Password,
+            uid: res.data.uid,
+          },
+          'register',
+        ),
+      );
+      //   {
+      //   type: 'user/register',
+      //   payload: {
+      //     username: res.data.name,
+      //     id: res.data.uid,
+      //   },
+      // }
+      setInputs({Name: '', UserId: '', Password: ''});
     } else {
       Alert.alert('network request failed');
 
