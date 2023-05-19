@@ -24,9 +24,43 @@ import {
 import MyActivityIndicator from '../Widgets/MyActivityIndicator';
 
 function TimeStamp(time) {
-  const date = new Date(time);
+  const date = new Date(time * 1000);
   // console.log(typeof time);
   return `${date.getHours()}:${date.getMinutes()}`;
+}
+function DateStamp(time) {
+  const date = new Date(time * 1000);
+  const now = new Date();
+  if (date.getFullYear() !== now.getFullYear()) {
+    return date.toDateString();
+  } else if (date.getMonth() !== now.getMonth()) {
+    return date.toDateString();
+  } else if (date.getDate() === now.getDate() - 1) {
+    return 'Yesterday';
+  } else if (date.getDate() === now.getDate()) {
+    return 'Today';
+  } else return date.toDateString();
+}
+function isDiffDates(time1, time2) {
+  const date1 = new Date(time1 * 1000);
+  const date2 = new Date(time2 * 1000);
+  let isDif = false;
+  if (date1.getFullYear() !== date2.getFullYear()) {
+    isDif = true;
+  } else if (date1.getMonth() !== date2.getMonth()) {
+    isDif = true;
+  }
+  isDif = date1.getDate() !== date2.getDate();
+  // console.log(date1, date2, isDif);
+
+  return isDif;
+}
+function isSameTime(time1, time2) {
+  if (isDiffDates(time1, time2)) {
+    return false;
+  } else {
+    return TimeStamp(time1) === TimeStamp(time2);
+  }
 }
 
 export default function ChatBox({ScrollViewRef}) {
@@ -46,6 +80,34 @@ export default function ChatBox({ScrollViewRef}) {
   const isLoading = useSelector(selectMessageStatus) === 'loading';
   let inverted_messages = [...messages];
   inverted_messages.reverse();
+  for (let i = 0; i < inverted_messages.length - 1; i++) {
+    inverted_messages[i] = {
+      ...inverted_messages[i],
+      isnewDate: isDiffDates(
+        inverted_messages[i]?.sentAt,
+        inverted_messages[i + 1]?.sentAt,
+      ),
+      SenderSameAsPrevious:
+        inverted_messages[i].sender === inverted_messages[i + 1].sender,
+      // TimeSameAsPrevious: isSameTime(
+      //   inverted_messages[i].sentAt,
+      //   inverted_messages[i + 1].sentAt,
+      // ),
+    };
+  }
+  // for (let i = inverted_messages.length; i > 0; i--) {
+  //   inverted_messages[i] = {
+  //     ...inverted_messages[i],
+  //     TimeSameAsNext: isSameTime(
+  //       inverted_messages[i].sentAt,
+  //       inverted_messages[i + 1].sentAt,
+  //     ),
+  //   };
+  // }
+  inverted_messages[inverted_messages.length - 1] = {
+    ...inverted_messages[inverted_messages.length - 1],
+    isnewDate: true,
+  };
   return (
     <View style={{flex: 1}}>
       {/* <Button
@@ -64,7 +126,12 @@ export default function ChatBox({ScrollViewRef}) {
         <MyActivityIndicator />
       ) : (
         <FlatList
+          alwaysBounceHorizontal={false}
+          alwaysBounceVertical={false}
+          bounces={false}
           onEndReachedThreshold={0.5}
+          overScrollMode="never"
+          scrollToOverflowEnabled={false}
           keyExtractor={item => item.id}
           onEndReached={() => {
             dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
@@ -73,20 +140,26 @@ export default function ChatBox({ScrollViewRef}) {
           ref={ScrollViewRef}
           data={inverted_messages}
           inverted={true}
-          renderItem={({item}) => {
+          renderItem={({item, index}) => {
             // console.log('inside renderItem', item.id);
             const mes = item;
+
             return (
-              mes.type === 'text' && (
-                <ChatText
-                  text={mes.data.text + ' ' + mes.id}
-                  me={user.id === mes.sender}
-                  time={TimeStamp(mes.sentAt)}
-                  isread={chatBox.readTill >= mes.time}
-                  key={mes.id}
-                  sender={mes.data.entities.sender.entity.name}
-                />
-              )
+              <View>
+                {mes.isnewDate && <ChatNewDate text={DateStamp(mes.sentAt)} />}
+                {mes.type === 'text' && (
+                  <ChatText
+                    text={mes.data.text}
+                    me={user.id === mes.sender}
+                    time={mes.sentAt}
+                    isread={chatBox.readTill >= mes.time}
+                    key={mes.id}
+                    sender={mes.data.entities.sender.entity.name}
+                    SSAP={!mes.isnewDate && mes.SenderSameAsPrevious}
+                    // TSAP={mes.TimeSameAsPrevious}
+                  />
+                )}
+              </View>
             );
           }}
         />
@@ -95,17 +168,21 @@ export default function ChatBox({ScrollViewRef}) {
   );
 }
 
-function ChatText({text, me, time, isread, sender = 'Vaibhav'}) {
+function ChatText({text, me, time, isread, sender, SSAP, TSAP}) {
   return (
     <View>
-      {!me && <Text style={styles.senderName}>{sender}</Text>}
+      {!me && !SSAP && <Text style={styles.senderName}>{sender}</Text>}
       <Text
         style={[
           styles.Text,
           styles.ChatText,
           me ? styles.ChatTextMy : styles.ChatTextOther,
+          // SSAP && {borderRadius: 10},
         ]}>
         {text}
+        {/* <Text style={[styles.Text, styles.Text_small, {alignSelf: 'flex-end'}]}>
+          {TimeStamp(time)} {me && isread && <ReadIcon />}
+        </Text> */}
       </Text>
       <View
         style={[
@@ -113,7 +190,7 @@ function ChatText({text, me, time, isread, sender = 'Vaibhav'}) {
           me ? styles.ChatTimeMy : styles.ChatTimeOther,
         ]}>
         <Text style={[styles.Text, styles.Text_small]}>
-          {time} {me && isread && <ReadIcon />}
+          {TimeStamp(time)} {me && isread && <ReadIcon />}
         </Text>
       </View>
     </View>
@@ -140,9 +217,10 @@ function ReadIcon() {
     </View>
   );
 }
-function ChatNewDay({text}) {
+function ChatNewDate({text}) {
   return (
-    <View style={[styles.flexRow, {paddingBottom: 30, paddingHorizontal: 20}]}>
+    <View
+      style={[styles.flexRow, {paddingVertical: 30, paddingHorizontal: 30}]}>
       <View style={styles.Horizontal_Line} />
       <Text style={styles.Text}>{text}</Text>
       <View style={styles.Horizontal_Line} />
@@ -173,7 +251,7 @@ const styles = StyleSheet.create({
   },
   Horizontal_Line: {
     top: 10,
-    width: 100,
+    flex: 1,
     height: 1,
     backgroundColor: 'black',
     marginHorizontal: 15,
@@ -201,8 +279,9 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   ChatText: {
-    // marginTop: 10,
+    marginVertical: 2,
     maxWidth: 250,
+    minWidth: 70,
     paddingHorizontal: 10,
     paddingVertical: 10,
     // borderRadius: 5,
@@ -217,7 +296,7 @@ const styles = StyleSheet.create({
   senderName: {
     fontFamily: 'Poppins',
     color: '#771F98',
-    marginTop: 10,
+    marginTop: 20,
     fontSize: 15,
     fontWeight: '700',
   },

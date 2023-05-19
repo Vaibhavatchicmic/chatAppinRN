@@ -26,9 +26,10 @@ export class Messages extends Model {
   };
 
   @text('text') text;
-  @relation('chats', 'chat_id') chat;
-  @field('sender_id') SenderId;
-  @date('send_at') SendAt;
+  @field('chat_id') chatId;
+  @field('sender_id') senderId;
+  @date('send_at') sentAt;
+  @field('mes_id') mesId;
 }
 
 export class User extends Model {

@@ -5,6 +5,7 @@ import {Chat, Messages, User} from './model/models';
 
 import appSchema from './model/schema';
 import migrations from './model/migrations';
+import {gt, lt} from '@nozbe/watermelondb/QueryDescription';
 // import Post from './model/Post' // ⬅️ You'll import your Models here
 
 // First, create the adapter to the underlying database:
@@ -29,8 +30,8 @@ const database = new Database({
   modelClasses: [Chat, Messages, User],
 });
 
-db_readGroupMessages(124);
-db_createGroupMessages('abcd', 124, 1, 12345);
+// db_readGroupMessages(124);
+// db_createGroupMessages('abcd', 124, 1, 12345);
 
 export async function db_setCurrentUser({name, token, password, uid}) {
   let user = {
@@ -61,31 +62,70 @@ export async function db_remCurrentUser() {
 // }
 
 // export async function db_createGroups(name, is_group) {}
-
-export async function db_readGroupMessages(ID) {
+const GUID = '101'; //for now
+export async function db_readGroupMessages(
+  ID = GUID,
+  limit = 50,
+  lastMesId = 10,
+) {
   const messages = await database.read(async () => {
-    const MessagesCollection = await database
-      .get('messages')
-      .query(Q.where('chat_id', Q.eq(ID)));
+    console.log('searching in db');
+    const MessagesCollection = await database.get('messages').query(
+      Q.where('chat_id', Q.eq(ID)),
+      // Q.sortBy('mes_id', Q.asc),
+      Q.where('mes_id', gt(lastMesId)),
+      Q.take(limit),
+    );
     console.log('messages in db', MessagesCollection);
+    for (let i of MessagesCollection) {
+      console.log(i._raw);
+    }
     return MessagesCollection;
   });
+  return messages;
 }
+
+// export async function db_readGroupMessagesBefore(
+//   ID = GUID,
+//   limit = 50,
+//   lastMesId,
+// ) {
+//   const messages = await database.read(async () => {
+//     const MessagesCollection = await database
+//       .get('messages')
+//       .query(Q.where('chat_id', Q.eq(ID)));
+//     // console.log('messages in db', MessagesCollection);
+//     for (let i of MessagesCollection) {
+//       console.log(i._raw);
+//     }
+//     return MessagesCollection;
+//   });
+// }
 
 export async function db_createGroupMessages(
   text,
-  chatBoxId,
   senderId,
-  sendAt,
+  sentAt,
+  mesId,
+  chatBoxId = GUID,
 ) {
+  console.log(
+    'creating new message in db',
+    text,
+    chatBoxId,
+    senderId,
+    sentAt,
+    mesId,
+  );
   const message = await database.write(async () => {
     const message = await database.get('messages').create(message => {
       message.text = text;
-      message.chat_id = chatBoxId;
-      message.sender_id = senderId;
-      message.send_at = sendAt;
+      message.chatId = chatBoxId;
+      message.senderId = senderId;
+      message.sentAt = sentAt;
+      message.mesId = mesId;
     });
-    console.log(message);
+    console.log(message._raw);
     return message;
   });
 }

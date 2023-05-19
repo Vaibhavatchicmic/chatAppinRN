@@ -1,4 +1,4 @@
-import {View, Text, FlatList, ActivityIndicator} from 'react-native';
+import {View, Text, FlatList, ActivityIndicator, Button} from 'react-native';
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import Styles from './Styles';
@@ -7,8 +7,13 @@ import CallApi from '../../Utility/network';
 import {ChatsBoxElement} from './ChatsBoxElement';
 import {selectChatBoxes} from '../../Redux/chatBoxesReducer';
 import {CometChat} from '@cometchat-pro/react-native-chat';
-import {fetchGroupMessages} from '../../Redux/messagesReducer';
 import MyActivityIndicator from '../Widgets/MyActivityIndicator';
+import {
+  db_createGroupMessages,
+  db_readGroupMessages,
+} from '../../database.native';
+
+let mesId = 1;
 
 const ChatsList = ({navigation}) => {
   const chatBoxes = useSelector(selectChatBoxes);
@@ -67,6 +72,13 @@ const ChatsList = ({navigation}) => {
         <>
           <Text style={Styles.heading}>Chats</Text>
           {/* ChatBoxList */}
+          {/* <Button title="clickme" onPress={() => db_readGroupMessages('1')} />
+          <Button
+            title="clickme2"
+            onPress={() =>
+              db_createGroupMessages('abcdef', '1', '1', String(++mesId), '1')
+            }
+          /> */}
           <FlatList
             data={chatBoxesData}
             renderItem={({item}) => {

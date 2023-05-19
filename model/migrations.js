@@ -17,5 +17,14 @@ export default schemaMigrations({
         }),
       ],
     },
+    {
+      toVersion: 3,
+      steps: [
+        addColumns({
+          table: 'messages',
+          columns: [{name: 'mes_id', type: 'string', isIndexed: true}],
+        }),
+      ],
+    },
   ],
 });

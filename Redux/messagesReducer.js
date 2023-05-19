@@ -88,7 +88,6 @@ export function fetchGroupMessages(GUID, conv_id) {
     try {
       dispatch({type: 'messages/loading'});
       const messages = await messagesRequest.fetchPrevious();
-
       dispatch({
         type: 'messages/fetched_inStart',
         payload: {
