@@ -5,12 +5,31 @@ import {
   MyNavigator1,
   MyNavigator3,
 } from '../Screens/Home/MyNavigator';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Home from '../Screens/Home';
 import {StyleSheet} from 'react-native';
+import {
+  startMessagesListener,
+  stopMessagesListener,
+} from '../Utility/CometChat';
+import {useDispatch} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 export function MyTabs() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    startMessagesListener(textMessage => {
+      console.log('new message', textMessage);
+      dispatch({
+        type: 'messages/added',
+        payload: {
+          message: textMessage.rawMessage,
+          chatBoxId: textMessage.rawMessage.conversationId,
+        },
+      });
+    });
+    return stopMessagesListener;
+  }, []);
   return (
     <Tab.Navigator
       screenOptions={{

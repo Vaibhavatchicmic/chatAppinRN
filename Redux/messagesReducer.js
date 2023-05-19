@@ -35,7 +35,7 @@ const messagesSlice = createSlice({
       ];
     },
     init: (state, action) => {
-      console.log('initiating messages for', action.payload.chatBoxId, state);
+      // console.log('initiating messages for', action.payload.chatBoxId, state);
       state.data[action.payload.chatBoxId] = [];
     },
     added: (state, action) => {

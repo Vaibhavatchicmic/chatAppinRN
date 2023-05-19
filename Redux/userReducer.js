@@ -51,6 +51,9 @@ const userSlice = createSlice({
     loading: (state, action) => {
       state.status = 'loading';
     },
+    cancle: (state, action) => {
+      state.status = 'no_user';
+    },
   },
 });
 
@@ -88,6 +91,8 @@ export const getUserFromDB_f = () => async (dispatch, getState) => {
         id: user.uid,
       },
     });
+  } else {
+    dispatch({type: 'user/failed'});
   }
   console.log('user in db', user);
 };

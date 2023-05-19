@@ -25,6 +25,7 @@ import MyActivityIndicator from '../Widgets/MyActivityIndicator';
 
 function TimeStamp(time) {
   const date = new Date(time);
+  // console.log(typeof time);
   return `${date.getHours()}:${date.getMinutes()}`;
 }
 
@@ -43,53 +44,6 @@ export default function ChatBox({ScrollViewRef}) {
     console.log(chatBox.conv_id, 'chatBoxLoaded');
   }, []);
   const isLoading = useSelector(selectMessageStatus) === 'loading';
-  // useEffect(() => {
-  //   dispatch(async (dispatch, getState) => {
-  //     const res = await CallApi(`groups/${chatBox.id}/messages`);
-  //     console.log('messages fetched', res);
-  //     console.log('dispatching :', {
-  //       type: 'chatBoxes/messages/get',
-  //       payload: {
-  //         messages: res.data.map(mes => {
-  //           return {
-  //             senderId: mes.sender,
-  //             time: mes.sentAt,
-  //             text: mes.data.text,
-  //             id: mes.id,
-  //           };
-  //         }),
-  //       },
-  //     });
-  //     dispatch({
-  //       type: 'chatBoxes/messages/get',
-  //       payload: {
-  //         chatBoxId: chatBox.id,
-  //         messages: res.data.map(mes => {
-  //           return {
-  //             senderId: mes.sender,
-  //             time: mes.sentAt,
-  //             text: mes.data.text,
-  //             id: mes.id,
-  //           };
-  //         }),
-  //       },
-  //     });
-  //   });
-  //   dispatch(async (dispatch, getState) => {
-  //     const res = await CallApi(`groups/${chatBox.id}/members`, 'POST', {
-  //       participants: [user.id],
-  //     });
-  //     console.log(
-  //       'requesting ',
-  //       `groups/${chatBox.id}/members`,
-  //       [user.id],
-  //       res,
-  //     );
-  //     if (res.data) {
-  //       Alert.alert('Added to the group');
-  //     }
-  //   });
-  // }, []);
   let inverted_messages = [...messages];
   inverted_messages.reverse();
   return (
@@ -122,9 +76,6 @@ export default function ChatBox({ScrollViewRef}) {
           renderItem={({item}) => {
             // console.log('inside renderItem', item.id);
             const mes = item;
-            // console.log(mes);
-            // return <Text>hello</Text>;
-            // console.log('user and message :', user, mes);
             return (
               mes.type === 'text' && (
                 <ChatText
@@ -133,6 +84,7 @@ export default function ChatBox({ScrollViewRef}) {
                   time={TimeStamp(mes.sentAt)}
                   isread={chatBox.readTill >= mes.time}
                   key={mes.id}
+                  sender={mes.data.entities.sender.entity.name}
                 />
               )
             );
@@ -143,9 +95,10 @@ export default function ChatBox({ScrollViewRef}) {
   );
 }
 
-function ChatText({text, me, time = '14:12', isread}) {
+function ChatText({text, me, time, isread, sender = 'Vaibhav'}) {
   return (
     <View>
+      {!me && <Text style={styles.senderName}>{sender}</Text>}
       <Text
         style={[
           styles.Text,
@@ -214,6 +167,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#771F98',
     marginLeft: 'auto',
     color: 'white',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   Horizontal_Line: {
     top: 10,
@@ -229,6 +185,9 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderWidth: 2,
     borderColor: '#771F98',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   ChatTime: {
     backgroundColor: '#F1F1F1',
@@ -242,11 +201,11 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   ChatText: {
-    marginTop: 10,
+    // marginTop: 10,
     maxWidth: 250,
     paddingHorizontal: 10,
     paddingVertical: 10,
-    borderRadius: 15,
+    // borderRadius: 5,
     lineHeight: 21,
   },
 
@@ -254,5 +213,12 @@ const styles = StyleSheet.create({
     // marginTop: 5,
     top: 3,
     // position: 'relative',
+  },
+  senderName: {
+    fontFamily: 'Poppins',
+    color: '#771F98',
+    marginTop: 10,
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

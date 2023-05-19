@@ -39,17 +39,19 @@ export function Register({navigation}) {
     });
     // console.log(res);
     if (res.data) {
-      dispatch(
-        setUserInDB_f(
-          {
-            name: res.data.name,
-            token: res.data.authToken,
-            password: inputs.Password,
-            uid: res.data.uid,
-          },
-          'register',
-        ),
-      );
+      dispatch({type: 'user/cancle'});
+      navigation.navigate('Login');
+      // dispatch(
+      //   setUserInDB_f(
+      //     {
+      //       name: res.data.name,
+      //       token: res.data.authToken,
+      //       password: inputs.Password,
+      //       uid: res.data.uid,
+      //     },
+      //     'register',
+      //   ),
+      // );
       //   {
       //   type: 'user/register',
       //   payload: {

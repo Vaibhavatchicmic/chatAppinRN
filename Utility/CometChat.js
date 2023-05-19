@@ -11,14 +11,13 @@ let appSetting = new CometChat.AppSettingsBuilder()
 CometChat.init(appID, appSetting).then(
   () => {
     console.log('Initialization completed successfully');
-    // messagesListener();
   },
   error => {
     console.log('Initialization failed with error:', error);
   },
 );
 
-function messagesListener() {
+export function startMessagesListener(AddMessage) {
   console.log('started listening to messaages');
 
   let listenerID = 'UNIQUE_LISTENER_ID';
@@ -27,19 +26,22 @@ function messagesListener() {
     listenerID,
     new CometChat.MessageListener({
       onTextMessageReceived: textMessage => {
-        console.log('Text message received successfully', textMessage);
+        // console.log('Text message received successfully', textMessage);
+        AddMessage(textMessage);
       },
       onMediaMessageReceived: mediaMessage => {
-        console.log('Media message received successfully', mediaMessage);
+        // console.log('Media message received successfully', mediaMessage);
       },
       onCustomMessageReceived: customMessage => {
-        console.log('Custom message received successfully', customMessage);
+        // console.log('Custom message received successfully', customMessage);
       },
     }),
   );
 }
 
-function stopMessagesListener() {
+export function stopMessagesListener() {
+  console.log('stopped listening to messaages');
+
   var listenerID = 'UNIQUE_LISTENER_ID';
 
   CometChat.removeMessageListener(listenerID);
