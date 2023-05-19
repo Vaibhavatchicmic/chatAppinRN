@@ -1,6 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-const API_uri = 'https://238669cf456c0986.api-us.cometchat.io/v3/';
+// const API_uri = 'https://238669cf456c0986.api-us.cometchat.io/v3/';
+const API_uri = 'https://2381371d08b63f32.api-us.cometchat.io/v3';
 function CallApi(
   endpoint,
   method = 'GET',
@@ -22,7 +23,8 @@ function CallApi(
   return new Promise(resolve => {
     let headres = {
       'Content-Type': 'application/x-www-form-urlencoded',
-      apiKey: '9ccb4f4fc7152b0c0a0b07cedbba63236ae74a0c',
+      // apiKey: '9ccb4f4fc7152b0c0a0b07cedbba63236ae74a0c',
+      apiKey: '838d7d8c7d4cfd7a5110b54dfc3990233de32288',
       ...headers,
       // 'Access-Control-Request-Headers': 'Authorization',
       // Authorization: 'Bearer ' + (token ? token : ''),

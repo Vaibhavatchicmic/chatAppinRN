@@ -1,6 +1,7 @@
 import {CometChat} from '@cometchat-pro/react-native-chat';
 
-let appID = '238669cf456c0986';
+// let appID = '238669cf456c0986';
+let appID = '2381371d08b63f32';
 let region = 'us';
 let appSetting = new CometChat.AppSettingsBuilder()
   .subscribePresenceForAllUsers()
@@ -44,4 +45,5 @@ function stopMessagesListener() {
   CometChat.removeMessageListener(listenerID);
 }
 
-export const AUTH_KEY = 'e8be36c3e839fed6b6147c7106d1eedb81a19659';
+// export const AUTH_KEY = 'e8be36c3e839fed6b6147c7106d1eedb81a19659';
+export const AUTH_KEY = '398b85520beaa34f2b62fe425376b42bd709b02f';

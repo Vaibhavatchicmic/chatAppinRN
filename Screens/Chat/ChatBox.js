@@ -113,13 +113,7 @@ export default function ChatBox({ScrollViewRef}) {
           onEndReachedThreshold={0.5}
           keyExtractor={item => item.id}
           onEndReached={() => {
-            dispatch(
-              paginationGroupMessages(
-                chatBox.id,
-                chatBox.conv_id,
-                messages[0].id,
-              ),
-            );
+            dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
           }}
           style={{paddingHorizontal: 20}}
           ref={ScrollViewRef}

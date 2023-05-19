@@ -105,8 +105,10 @@ export function fetchGroupMessages(GUID, conv_id) {
     }
   };
 }
-export function paginationGroupMessages(GUID, conv_id, lastMesId) {
+export function paginationGroupMessages(GUID, conv_id) {
   return async (dispatch, getState) => {
+    let lastMesId = getState().messages.data[conv_id][0].id;
+    console.log('lastMesId', lastMesId);
     if (lastMesId === '1') {
       console.log('end reached');
     } else {
