@@ -8,6 +8,7 @@ import {ChatsBoxElement} from './ChatsBoxElement';
 import {selectChatBoxes} from '../../Redux/chatBoxesReducer';
 import {CometChat} from '@cometchat-pro/react-native-chat';
 import {fetchGroupMessages} from '../../Redux/messagesReducer';
+import MyActivityIndicator from '../Widgets/MyActivityIndicator';
 
 const ChatsList = ({navigation}) => {
   const chatBoxes = useSelector(selectChatBoxes);
@@ -19,22 +20,27 @@ const ChatsList = ({navigation}) => {
         .setLimit(limit)
         .joinedOnly(true)
         .build();
+
+      dispatch({type: 'chatBoxes/loading'});
       const res = await groupsRequest.fetchNext();
       // console.log(res);
+      const chatBoxes = {};
+      res.forEach(group => {
+        console.log('conv_id:', group.conversationId);
+        chatBoxes[group.conversationId] = {
+          name: group.name,
+          isGroup: true,
+          icon: group.icon,
+          id: group.guid,
+          conv_id: group.conversationId,
+          // avatar: group.avatar,
+          messages: [],
+        };
+      });
       dispatch({
         type: 'chatBoxes/fetched',
         payload: {
-          chatBoxes: res.map(group => {
-            return {
-              name: group.name,
-              isGroup: true,
-              icon: group.icon,
-              id: group.guid,
-              conv_id: group.conversationId,
-              // avatar: group.avatar,
-              messages: [],
-            };
-          }),
+          chatBoxes,
         },
       });
       res.forEach(element => {
@@ -48,22 +54,21 @@ const ChatsList = ({navigation}) => {
       });
     });
   }, []);
-  const isLoading = false;
+  const isLoading = chatBoxes.status === 'loading';
+  const chatBoxesData = Object.values(chatBoxes.data);
   // console.log('in Chatlist:', chatBoxes);
   return (
     <View style={{paddingHorizontal: 22, flex: 1}}>
       {/* heading */}
 
       {isLoading ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size="large" color="#771F98" />
-        </View>
+        <MyActivityIndicator />
       ) : (
         <>
           <Text style={Styles.heading}>Chats</Text>
           {/* ChatBoxList */}
           <FlatList
-            data={chatBoxes}
+            data={chatBoxesData}
             renderItem={({item}) => {
               // console.log(item);
               return (
@@ -72,11 +77,11 @@ const ChatsList = ({navigation}) => {
                   isGroup={item.isGroup}
                   id={item.id}
                   onPress={() => {
-                    console.log('chatBox selected ', item.id);
+                    // console.log('chatBox selected ', item.id);
                     dispatch({
                       type: 'currentChatBox/set',
                       payload: {
-                        id: item.id,
+                        id: item.conv_id,
                       },
                     });
                     navigation.navigate('Chats');

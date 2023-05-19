@@ -59,16 +59,16 @@ export default function Login({navigation}) {
         console.log(res);
         dispatch(
           setUserInDB_f({
-            name: res.data.name,
-            token: res.data.authToken,
+            name: res.name,
+            token: res.authToken,
             password: inputs.Password,
-            uid: res.data.uid,
+            uid: res.uid,
           }),
         );
         setInputs({UserId: '', Password: ''});
       } catch (e) {
         Alert.alert('network request failed');
-
+        console.error(e);
         dispatch({
           type: 'user/failed',
           // payload: {

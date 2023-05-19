@@ -35,7 +35,7 @@ export const initalState = {
   },
   // messages indexed by group id
   messages: {
-    status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed',
+    status: 'idle', //'idle' | 'loading'|'loading_all' | 'succeeded' | 'failed',
     error: null, //'string'
     data: {
       //index by group id

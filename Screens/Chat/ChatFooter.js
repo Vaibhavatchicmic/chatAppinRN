@@ -15,47 +15,63 @@ import {useDispatch, useSelector} from 'react-redux';
 import {ChatBoxContext} from './context';
 import CallApi from '../../Utility/network';
 import {selectCurrentUser} from '../../Redux/userReducer';
+import {
+  getMessagesByGroupId,
+  selectMessageLength,
+  sendMessage,
+} from '../../Redux/messagesReducer';
+import {selectCurrentChatBox} from '../../Redux/currentChatBoxReducer';
+import {getChatBoxbyId} from '../../Redux/chatBoxesReducer';
 
 function ChatFooter({ScrollViewRef}) {
-  const chatBox = useContext(ChatBoxContext);
   const user = useSelector(selectCurrentUser);
   const [input, setInput] = useState('');
+  const currentChatBox = useSelector(selectCurrentChatBox);
+  // const Message_length = useSelector(selectMessageLength);
 
+  const chatBox = useSelector(
+    getChatBoxbyId(useSelector(selectCurrentChatBox)),
+  );
+  const messages = useSelector(getMessagesByGroupId(chatBox.conv_id));
   const dispatch = useDispatch();
+  // console.log('messages:', messages);
 
-  function handleAddMessage(text) {
-    dispatch(async (dispatch, getState) => {
-      const res = await CallApi(
-        'messages',
-        'POST',
-        {
-          receiver: chatBox.id,
-          receiverType: 'group',
-          data: {text: input},
-        },
-        {onBehalfOf: user.id},
-      );
-      console.log(res);
-      if (res.data) {
-        dispatch({
-          type: 'chatBoxes/messages/added',
-          payload: {
-            senderId: user.id,
-            time: res.data.sentAt,
-          },
-        });
-      }
-    });
-    dispatch({
-      type: 'chatBoxes/messages/added',
-      payload: {
-        senderId: user.id,
-        text: input,
-        chatBoxId: chatBox.id,
-      },
-    });
+  async function handleAddMessage() {
+    // dispatch(async (dispatch, getState) => {
+    //   const res = await CallApi(
+    //     'messages',
+    //     'POST',
+    //     {
+    //       receiver: chatBox.id,
+    //       receiverType: 'group',
+    //       data: {text: input},
+    //     },
+    //     {onBehalfOf: user.id},
+    //   );
+    //   console.log(res);
+    //   if (res.data) {
+    //     dispatch({
+    //       type: 'chatBoxes/messages/added',
+    //       payload: {
+    //         senderId: user.id,
+    //         time: res.data.sentAt,
+    //       },
+    //     });
+    //   }
+    // });
+    // dispatch({
+    //   type: 'chatBoxes/messages/added',
+    //   payload: {
+    //     senderId: user.id,
+    //     text: input,
+    //     chatBoxId: chatBox.id,
+    //   },
+    // });
+    dispatch(
+      sendMessage(input, true, currentChatBox.slice(6), chatBox.conv_id),
+    );
     setInput('');
-    // ScrollViewRef.current.scrollToEnd({animated: true});
+    ScrollViewRef.current.scrollToIndex({index: 0});
   }
 
   const isTyping = input !== '';

@@ -1,12 +1,10 @@
 import {Platform} from 'react-native';
-import {Database} from '@nozbe/watermelondb';
+import {Database, Q} from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import {Chat, Messages, User} from './model/models';
 
 import appSchema from './model/schema';
 import migrations from './model/migrations';
-import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-import {devToolsEnhancer} from '@reduxjs/toolkit/dist/devtoolsExtension';
 // import Post from './model/Post' // ⬅️ You'll import your Models here
 
 // First, create the adapter to the underlying database:
@@ -31,19 +29,8 @@ const database = new Database({
   modelClasses: [Chat, Messages, User],
 });
 
-database.write(async () => {
-  // let user = {
-  //   name: '',
-  //   token: '',
-  //   password: '',
-  //   uid: '',
-  // };
-  // await database.localStorage.set('CurrentUser', JSON.stringify(user));
-  // await db_setCurrentUser({name: 'fdas', token: '', password: '', uid: ''});
-  // const user = await db_getCurrentUser();
-  // console.log(user);
-  // database.localStorage.remove('CurrentUser');
-});
+db_readGroupMessages(124);
+db_createGroupMessages('abcd', 124, 1, 12345);
 
 export async function db_setCurrentUser({name, token, password, uid}) {
   let user = {
@@ -63,4 +50,42 @@ export async function db_getCurrentUser() {
 }
 export async function db_remCurrentUser() {
   await database.localStorage.remove('CurrentUser');
+}
+
+// export async function db_readGroups() {
+//   const groups = await database.read(async => {
+//     const GroupCollection = database.get('chats').query().fetch();
+//     console.log(GroupCollection);
+//     return GroupCollection;
+//   });
+// }
+
+// export async function db_createGroups(name, is_group) {}
+
+export async function db_readGroupMessages(ID) {
+  const messages = await database.read(async () => {
+    const MessagesCollection = await database
+      .get('messages')
+      .query(Q.where('chat_id', Q.eq(ID)));
+    console.log('messages in db', MessagesCollection);
+    return MessagesCollection;
+  });
+}
+
+export async function db_createGroupMessages(
+  text,
+  chatBoxId,
+  senderId,
+  sendAt,
+) {
+  const message = await database.write(async () => {
+    const message = await database.get('messages').create(message => {
+      message.text = text;
+      message.chat_id = chatBoxId;
+      message.sender_id = senderId;
+      message.send_at = sendAt;
+    });
+    console.log(message);
+    return message;
+  });
 }

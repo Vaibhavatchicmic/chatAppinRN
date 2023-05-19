@@ -1,6 +1,7 @@
 import {messagesReducer} from './messagesReducer';
 import {initalState} from './initalState';
 import {createSlice} from '@reduxjs/toolkit';
+import {action} from '@nozbe/watermelondb/decorators';
 
 export let chatId = 1000;
 
@@ -37,8 +38,13 @@ const chatBoxesSlice = createSlice({
   name: 'chatBoxes',
   initialState: chatBoxes,
   reducers: {
+    // fetching all the groups
     fetched: (state, action) => {
       state.data = action.payload.chatBoxes;
+      state.status = 'idle';
+    },
+    loading: (state, action) => {
+      state.status = 'loading';
     },
     created: (state, action) => {
       state.push({
@@ -65,10 +71,11 @@ export const {fetched, created, deleted} = chatBoxesSlice.actions;
 
 export function getChatBoxbyId(id) {
   return function selectChatBox(state) {
-    console.log('first chatbox', state.chatBoxes.data[0]);
-    return state.chatBoxes.data[0];
+    // console.log(state.chatBoxes);
+    // console.log('chatbox for ', id, state.chatBoxes.data[id]);
+    return state.chatBoxes.data[id];
   };
 }
 export function selectChatBoxes(state) {
-  return state.chatBoxes.data;
+  return state.chatBoxes;
 }

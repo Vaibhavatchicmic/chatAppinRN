@@ -1,4 +1,12 @@
-import {View, Text, FlatList, Alert, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Alert,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+} from 'react-native';
 import React, {memo, useContext, useEffect, useMemo} from 'react';
 import Svg, {Path} from 'react-native-svg';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,7 +18,10 @@ import {selectCurrentChatBox} from '../../Redux/currentChatBoxReducer';
 import {
   fetchGroupMessages,
   getMessagesByGroupId,
+  paginationGroupMessages,
+  selectMessageStatus,
 } from '../../Redux/messagesReducer';
+import MyActivityIndicator from '../Widgets/MyActivityIndicator';
 
 function TimeStamp(time) {
   const date = new Date(time);
@@ -22,12 +33,16 @@ export default function ChatBox({ScrollViewRef}) {
   const chatBox = useSelector(
     getChatBoxbyId(useSelector(selectCurrentChatBox)),
   );
-  const messages = useSelector(getMessagesByGroupId(125));
+  const messages = useSelector(getMessagesByGroupId(chatBox.conv_id));
   const dispatch = useDispatch();
-  console.log('chatbox  akd:', chatBox);
-  // useEffect(() => {
-  //   dispatch(fetchGroupMessages());
-  // }, []);
+  // console.log('messages:', messages);
+  useEffect(() => {
+    if (messages.length === 0) {
+      dispatch(fetchGroupMessages(chatBox.id, chatBox.conv_id));
+    }
+    console.log(chatBox.conv_id, 'chatBoxLoaded');
+  }, []);
+  const isLoading = useSelector(selectMessageStatus) === 'loading';
   // useEffect(() => {
   //   dispatch(async (dispatch, getState) => {
   //     const res = await CallApi(`groups/${chatBox.id}/messages`);
@@ -75,44 +90,61 @@ export default function ChatBox({ScrollViewRef}) {
   //     }
   //   });
   // }, []);
-  // let inverted_messages = [...chatBox.messages];
-  let inverted_messages = [];
+  let inverted_messages = [...messages];
   inverted_messages.reverse();
   return (
     <View style={{flex: 1}}>
-      {/* <ScrollView style={{paddingHorizontal: 20}} ref={ScrollViewRef}>
-        <ChatNewDay text={'Today'} />
-        {messages.map(mes => (
-          <ChatText
-            text={mes.text}
-            me={Username === mes.sender}
-            time={TimeStamp(mes.time)}
-            isread={mes.time <= readTill}
-            key={mes.id}
-          />
-        ))}
-      </ScrollView> */}
-      <FlatList
-        style={{paddingHorizontal: 20}}
-        ref={ScrollViewRef}
-        data={inverted_messages}
-        inverted={true}
-        renderItem={({item}) => {
-          const mes = item;
-          // console.log(mes);
-          // return <Text>hello</Text>;
-          // console.log('user and message :', user, mes);
-          return (
-            <ChatText
-              text={mes.text}
-              me={user.id === mes.senderId}
-              time={TimeStamp(mes.time)}
-              isread={chatBox.readTill >= mes.time}
-              key={mes.id}
-            />
+      {/* <Button
+        title="Click me"
+        onPress={() => {
+          dispatch(
+            paginationGroupMessages(
+              chatBox.id,
+              chatBox.conv_id,
+              messages[0].id,
+            ),
           );
         }}
-      />
+      /> */}
+      {isLoading ? (
+        <MyActivityIndicator />
+      ) : (
+        <FlatList
+          onEndReachedThreshold={0.5}
+          keyExtractor={item => item.id}
+          onEndReached={() => {
+            dispatch(
+              paginationGroupMessages(
+                chatBox.id,
+                chatBox.conv_id,
+                messages[0].id,
+              ),
+            );
+          }}
+          style={{paddingHorizontal: 20}}
+          ref={ScrollViewRef}
+          data={inverted_messages}
+          inverted={true}
+          renderItem={({item}) => {
+            // console.log('inside renderItem', item.id);
+            const mes = item;
+            // console.log(mes);
+            // return <Text>hello</Text>;
+            // console.log('user and message :', user, mes);
+            return (
+              mes.type === 'text' && (
+                <ChatText
+                  text={mes.data.text + ' ' + mes.id}
+                  me={user.id === mes.sender}
+                  time={TimeStamp(mes.sentAt)}
+                  isread={chatBox.readTill >= mes.time}
+                  key={mes.id}
+                />
+              )
+            );
+          }}
+        />
+      )}
     </View>
   );
 }

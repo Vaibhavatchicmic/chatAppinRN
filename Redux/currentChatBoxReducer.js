@@ -5,7 +5,7 @@ const currentChatBoxSlice = createSlice({
   initialState: null,
   reducers: {
     set: (state, action) => {
-      console.log('changing current Chatbox', action);
+      // console.log('changing current Chatbox', action);
       return action.payload.id;
     },
     unset: (state, action) => {

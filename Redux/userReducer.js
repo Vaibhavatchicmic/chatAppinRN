@@ -7,6 +7,7 @@ import {
   db_setCurrentUser,
 } from '../database.native';
 import {CometChat} from '@cometchat-pro/react-native-chat';
+import {action} from '@nozbe/watermelondb/decorators';
 
 let userId = 1000;
 
@@ -37,7 +38,8 @@ const userSlice = createSlice({
     },
     logout: (state, action) => {
       state.status = 'no_user';
-      state.uid = '';
+      state.id = '';
+      state.token = '';
     },
     submit: (state, action) => {
       state.status = 'submitting';
@@ -45,6 +47,9 @@ const userSlice = createSlice({
     failed: (state, action) => {
       state.status = 'no_user';
       // state.message = action.payload.message;
+    },
+    loading: (state, action) => {
+      state.status = 'loading';
     },
   },
 });
@@ -69,7 +74,11 @@ export function selectUsername(state) {
 }
 export const getUserFromDB_f = () => async (dispatch, getState) => {
   console.log('checking db for user');
+  dispatch({
+    type: 'user/loading',
+  });
   const user = await db_getCurrentUser();
+
   if (user?.uid) {
     dispatch({
       type: 'user/login',
@@ -113,6 +122,7 @@ export const remUserFromDB_f = () => async (dispatch, getState) => {
   const user0 = await CometChat.getLoggedinUser();
   if (user0) {
     await CometChat.logout();
+    console.log('logout from Cometchat');
   }
   dispatch({
     type: 'user/logout',
