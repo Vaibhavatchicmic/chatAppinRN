@@ -17,7 +17,7 @@ export default appSchema({
         {name: 'chat_id', type: 'string', isIndexed: true},
         {name: 'sender_id', type: 'string'},
         {name: 'send_at', type: 'number'},
-        {name: 'mes_id', type: 'string', isIndexed: true},
+        {name: 'mes_id', type: 'number', isIndexed: true},
       ],
     }),
     tableSchema({

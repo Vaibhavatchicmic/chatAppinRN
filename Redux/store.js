@@ -3,6 +3,7 @@ import {userReducer} from './userReducer';
 import {chatBoxesReducer} from './chatBoxesReducer';
 import {messagesReducer} from './messagesReducer';
 import {currentChatBoxReducer} from './currentChatBoxReducer';
+import {AddEditPageReducer} from './AddEditPageReducer';
 // Actions:
 // chatBoxes/created
 // chatBoxes/edited
@@ -30,6 +31,7 @@ const configureCustomStore = () => {
     chatBoxes: chatBoxesReducer,
     messages: messagesReducer,
     currentChatBox: currentChatBoxReducer,
+    AddEditPage: AddEditPageReducer,
   });
 
   const store = configureStore({

@@ -3,7 +3,7 @@ import React from 'react';
 import Styles from './Styles';
 import {Svg, Path} from 'react-native-svg';
 
-const MySearchBar = () => {
+const MySearchBar = ({SearchPlaceholder}) => {
   return (
     <View>
       <StatusBar backgroundColor="#771F98" barStyle={'light-content'} />
@@ -11,7 +11,10 @@ const MySearchBar = () => {
         {/* Search */}
         <View style={Styles.SearchInputCon}>
           <Searchbtn />
-          <TextInput placeholder=" Search Chat" style={Styles.SearchInput} />
+          <TextInput
+            placeholder={SearchPlaceholder}
+            style={Styles.SearchInput}
+          />
         </View>
 
         {/* QR opener */}

@@ -2,6 +2,7 @@ import {messagesReducer} from './messagesReducer';
 import {initalState} from './initalState';
 import {createSlice} from '@reduxjs/toolkit';
 import {action} from '@nozbe/watermelondb/decorators';
+import {CometChat} from '@cometchat-pro/react-native-chat';
 
 export let chatId = 1000;
 
@@ -78,4 +79,29 @@ export function getChatBoxbyId(id) {
 }
 export function selectChatBoxes(state) {
   return state.chatBoxes;
+}
+
+// create a group with the logged in user as admin
+export function createChatBox(GUID, groupName, onSuccess, onFail) {
+  return async (dispatch, getState) => {
+    const UID = getState().user.id;
+    let groupType = CometChat.GROUP_TYPE.PUBLIC;
+
+    let group = new CometChat.Group(GUID, groupName, groupType);
+    let members = [
+      new CometChat.GroupMember(UID, CometChat.GROUP_MEMBER_SCOPE.ADMIN),
+    ];
+    let banMembers = [];
+
+    CometChat.createGroupWithMembers(group, members, banMembers).then(
+      response => {
+        console.log('Group created successfully', response);
+        onSuccess();
+      },
+      error => {
+        console.log('Some error occured while creating group', error);
+        onFail();
+      },
+    );
+  };
 }

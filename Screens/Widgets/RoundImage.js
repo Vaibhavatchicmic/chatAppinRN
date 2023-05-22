@@ -1,15 +1,17 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const RoundImage = ({isGroup, isLarge}) => {
+const RoundImage = ({isGroup, isLarge, img}) => {
   const GroupImage = require('../../Assets/Group.png');
   const PerosnImage = require('../../Assets/Person.jpg');
   return (
     <View style={[styles.image_box, isLarge && styles.large]}>
-      <Image
-        style={[styles.Image_icon, isLarge && styles.large]}
-        source={isGroup ? GroupImage : PerosnImage}
-      />
+      {img || (
+        <Image
+          style={[styles.Image_icon, isLarge && styles.large]}
+          source={isGroup ? GroupImage : PerosnImage}
+        />
+      )}
     </View>
   );
 };

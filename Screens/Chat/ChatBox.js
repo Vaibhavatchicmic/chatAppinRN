@@ -18,10 +18,12 @@ import {selectCurrentChatBox} from '../../Redux/currentChatBoxReducer';
 import {
   fetchGroupMessages,
   getMessagesByGroupId,
+  nextGroupMessages,
   paginationGroupMessages,
   selectMessageStatus,
 } from '../../Redux/messagesReducer';
 import MyActivityIndicator from '../Widgets/MyActivityIndicator';
+import {db_readGroupMessages} from '../../database.native';
 
 function TimeStamp(time) {
   const date = new Date(time * 1000);
@@ -71,9 +73,35 @@ export default function ChatBox({ScrollViewRef}) {
   const messages = useSelector(getMessagesByGroupId(chatBox.conv_id));
   const dispatch = useDispatch();
   // console.log('messages:', messages);
+
   useEffect(() => {
+    const loadMes = async () => {
+      let dbMessages = await db_readGroupMessages(chatBox.conv_id, 50);
+      if (dbMessages.length > 0) {
+        console.log(
+          'messages in db',
+          dbMessages.map(data => JSON.parse(data.text)),
+        );
+
+        dispatch({
+          type: 'messages/fetched_inStart',
+          payload: {
+            messages: dbMessages.map(data => JSON.parse(data.text)),
+            chatBoxId: chatBox.conv_id,
+          },
+        });
+        console.log('messages found in db');
+        //now need to load further messages
+        dispatch(nextGroupMessages(chatBox.id, chatBox.conv_id));
+        console.log('now loading next messages');
+      } else {
+        // also save in local db
+        dispatch(fetchGroupMessages(chatBox.id, chatBox.conv_id));
+        console.log('messages not found in db making network request');
+      }
+    };
     if (messages.length === 0) {
-      dispatch(fetchGroupMessages(chatBox.id, chatBox.conv_id));
+      loadMes();
     }
     console.log(chatBox.conv_id, 'chatBoxLoaded');
   }, []);
@@ -95,15 +123,6 @@ export default function ChatBox({ScrollViewRef}) {
       // ),
     };
   }
-  // for (let i = inverted_messages.length; i > 0; i--) {
-  //   inverted_messages[i] = {
-  //     ...inverted_messages[i],
-  //     TimeSameAsNext: isSameTime(
-  //       inverted_messages[i].sentAt,
-  //       inverted_messages[i + 1].sentAt,
-  //     ),
-  //   };
-  // }
   inverted_messages[inverted_messages.length - 1] = {
     ...inverted_messages[inverted_messages.length - 1],
     isnewDate: true,
@@ -133,8 +152,31 @@ export default function ChatBox({ScrollViewRef}) {
           overScrollMode="never"
           scrollToOverflowEnabled={false}
           keyExtractor={item => item.id}
-          onEndReached={() => {
-            dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
+          onEndReached={async () => {
+            const dbMessages = await db_readGroupMessages(
+              chatBox.conv_id,
+              50,
+              messages[0].id,
+            );
+            if (dbMessages.length > 0) {
+              console.log(
+                'in pagination :messages found in db',
+                dbMessages.map(m => m.mes_id),
+              );
+              dispatch({
+                type: 'messages/fetched_inStart',
+                payload: {
+                  messages: dbMessages.map(data => JSON.parse(data.text)),
+                  chatBoxId: chatBox.conv_id,
+                },
+              });
+            } else {
+              dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
+
+              console.log(
+                'in pagination: messages not found in db making network request',
+              );
+            }
           }}
           style={{paddingHorizontal: 20}}
           ref={ScrollViewRef}

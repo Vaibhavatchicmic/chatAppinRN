@@ -76,7 +76,7 @@ const ChatsList = ({navigation}) => {
           <Button
             title="clickme2"
             onPress={() =>
-              db_createGroupMessages('abcdef', '1', '1', String(++mesId), '1')
+              db_createGroupMessages('abcdef', '1', '1', ++mesId, '1')
             }
           /> */}
           <FlatList

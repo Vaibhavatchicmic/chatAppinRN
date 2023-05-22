@@ -66,22 +66,28 @@ const GUID = '101'; //for now
 export async function db_readGroupMessages(
   ID = GUID,
   limit = 50,
-  lastMesId = 10,
+  lastMesId = 10000000,
 ) {
-  const messages = await database.read(async () => {
-    console.log('searching in db');
+  let messages = await database.read(async () => {
+    console.log('searching in db', ID, lastMesId);
     const MessagesCollection = await database.get('messages').query(
-      Q.where('chat_id', Q.eq(ID)),
-      // Q.sortBy('mes_id', Q.asc),
-      Q.where('mes_id', gt(lastMesId)),
+      // Q.where('chat_id', Q.eq(ID)),
+      Q.where('mes_id', lt(+lastMesId)),
       Q.take(limit),
+      Q.sortBy('mes_id', Q.desc),
     );
-    console.log('messages in db', MessagesCollection);
-    for (let i of MessagesCollection) {
-      console.log(i._raw);
-    }
+    // for (let i of MessagesCollection) {
+    //   console.log(i);
+    // }
+    // console.log(MessagesCollection, 'messages collection');
     return MessagesCollection;
   });
+
+  // for (let i of messages) {
+  //   console.log(i._raw.text);
+  // }
+  messages = messages.map(mes => mes._raw).reverse();
+  // console.log(messages);
   return messages;
 }
 
@@ -106,17 +112,17 @@ export async function db_createGroupMessages(
   text,
   senderId,
   sentAt,
-  mesId,
+  mesId, //number
   chatBoxId = GUID,
 ) {
-  console.log(
-    'creating new message in db',
-    text,
-    chatBoxId,
-    senderId,
-    sentAt,
-    mesId,
-  );
+  // console.log(
+  //   'creating new message in db',
+  //   text,
+  //   chatBoxId,
+  //   senderId,
+  //   sentAt,
+  //   mesId,
+  // );
   const message = await database.write(async () => {
     const message = await database.get('messages').create(message => {
       message.text = text;
@@ -125,7 +131,14 @@ export async function db_createGroupMessages(
       message.sentAt = sentAt;
       message.mesId = mesId;
     });
-    console.log(message._raw);
+    // console.log(message._raw);
     return message;
+  });
+}
+
+export async function db_clearDatabase() {
+  await database.write(async () => {
+    await database.get('messages').query().destroyAllPermanently();
+    console.log('cleared all messages');
   });
 }

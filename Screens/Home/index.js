@@ -8,7 +8,7 @@ const Home = ({navigation}) => {
   return (
     <View style={Styles.Home}>
       {/* Search bar */}
-      <MySearchBar />
+      <MySearchBar SearchPlaceholder="Search Chat" />
 
       {/* Chats */}
       <ChatsList navigation={navigation} />

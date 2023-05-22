@@ -3,6 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   MyNavigator,
   MyNavigator1,
+  MyNavigator2,
   MyNavigator3,
 } from '../Screens/Home/MyNavigator';
 import React, {useEffect} from 'react';
@@ -13,6 +14,9 @@ import {
   stopMessagesListener,
 } from '../Utility/CometChat';
 import {useDispatch} from 'react-redux';
+import {db_createGroupMessages} from '../database.native';
+import AddContact from '../Screens/AddContacts';
+import AddContacts from '../Screens/AddContacts';
 
 const Tab = createBottomTabNavigator();
 export function MyTabs() {
@@ -27,9 +31,16 @@ export function MyTabs() {
           chatBoxId: textMessage.rawMessage.conversationId,
         },
       });
+      db_createGroupMessages(
+        JSON.stringify(textMessage.rawMessage),
+        textMessage.rawMessage.sender,
+        textMessage.rawMessage.sentAt,
+        +textMessage.rawMessage.id,
+        textMessage.rawMessage.conversationId,
+      );
     });
     return stopMessagesListener;
-  }, []);
+  }, [dispatch]);
   return (
     <Tab.Navigator
       screenOptions={{
@@ -46,6 +57,13 @@ export function MyTabs() {
         options={{
           tabBarLabel: 'asdf',
           tabBarIcon: ({color}) => <MyNavigator1 color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="AddContacts"
+        component={AddContacts}
+        options={{
+          tabBarIcon: ({color}) => <MyNavigator2 color={color} />,
         }}
       />
       <Tab.Screen

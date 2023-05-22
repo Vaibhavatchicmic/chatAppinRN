@@ -1,11 +1,19 @@
 import React from 'react';
-import {View, Text, Pressable, ScrollView, StatusBar} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  Alert,
+} from 'react-native';
 import RoundImage from '../Widgets/RoundImage';
 import {Svg, Path} from 'react-native-svg';
 import {styles} from './styles';
 import ClickElement from './ClickElement';
 import {useDispatch, useSelector} from 'react-redux';
 import {remUserFromDB_f, selectCurrentUser} from '../../Redux/userReducer';
+import {db_clearDatabase} from '../../database.native';
 
 const Profile = ({navigation}) => {
   const dispatch = useDispatch();
@@ -61,6 +69,13 @@ const Profile = ({navigation}) => {
         <ClickElement text={'Support'} />
         <ClickElement text={'Privacy Policy'} />
         <ClickElement text={'Sign Out'} onPress={handleSignOut} />
+        <ClickElement
+          text={'clear storage'}
+          onPress={() => {
+            db_clearDatabase();
+            Alert.alert('All local Data cleared');
+          }}
+        />
       </ScrollView>
     </View>
   );

@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getUserFromDB_f, selectCurrentUser} from '../Redux/userReducer';
 import {MyTabs} from '../TabNavigator/HomeTabs';
 import {selectCurrentChatBox} from '../Redux/currentChatBoxReducer';
+import AddEditPage from '../Screens/AddEditPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ export const MyStack = () => {
           {}
           <Stack.Screen name="Home" component={MyTabs} />
           <Stack.Screen name="Chats" component={Chats} />
+          <Stack.Screen name="AddEdit" component={AddEditPage} />
         </Stack.Navigator>
       )}
     </NavigationContainer>

@@ -5,6 +5,7 @@ import {action} from '@nozbe/watermelondb/decorators';
 import {CometChat} from '@cometchat-pro/react-native-chat';
 import {startWith} from '@nozbe/watermelondb/utils/rx';
 import {selectCurrentChatBox} from './currentChatBoxReducer';
+import {db_createGroupMessages} from '../database.native';
 let mesId = 1000;
 
 const messagesSlice = createSlice({
@@ -19,6 +20,7 @@ const messagesSlice = createSlice({
     loading: (state, action) => {
       state.status = 'loading';
     },
+    //for lot of messages
     fetched_inStart: (state, action) => {
       state.data[action.payload.chatBoxId] = [
         ...action.payload.messages,
@@ -26,9 +28,15 @@ const messagesSlice = createSlice({
       ];
       state.status = 'idle';
     },
+    fetched_inEnd: (state, action) => {
+      state.data[action.payload.chatBoxId] = [
+        ...state.data[action.payload.chatBoxId],
+        ...action.payload.messages,
+      ];
+      state.status = 'idle';
+    },
+    // for lot of messages
     paginated_inStart: (state, action) => {
-      let a = [];
-      a.unshift(action.payload.messages);
       state.data[action.payload.chatBoxId] = [
         ...action.payload.messages,
         ...state.data[action.payload.chatBoxId],
@@ -38,6 +46,7 @@ const messagesSlice = createSlice({
       // console.log('initiating messages for', action.payload.chatBoxId, state);
       state.data[action.payload.chatBoxId] = [];
     },
+    //for one message
     added: (state, action) => {
       state.data[action.payload.chatBoxId] = [
         ...state.data[action.payload.chatBoxId],
@@ -77,14 +86,16 @@ export function selectMessageStatus(state) {
 
 const LIMIT = 50;
 
+//when open chatBox first time
 export function fetchGroupMessages(GUID, conv_id) {
   return async (dispatch, getState) => {
+    // messagesFromDB=
+
     let messagesRequest = new CometChat.MessagesRequestBuilder()
       .setGUID(GUID)
       .setLimit(LIMIT)
       .build();
 
-    const gMessages = [];
     try {
       dispatch({type: 'messages/loading'});
       const messages = await messagesRequest.fetchPrevious();
@@ -95,10 +106,16 @@ export function fetchGroupMessages(GUID, conv_id) {
           chatBoxId: conv_id,
         },
       });
-      console.log(
-        'Message list fetched:',
-        messages.map(m => m.rawMessage),
-      );
+      //now saving messages to db
+      messages.map(message => {
+        db_createGroupMessages(
+          JSON.stringify(message.rawMessage),
+          message.rawMessage.sender,
+          message.rawMessage.sentAt,
+          +message.rawMessage.id,
+          conv_id,
+        );
+      });
     } catch (error) {
       console.log('Message fetching failed with error:', error);
     }
@@ -146,14 +163,62 @@ export function paginationGroupMessages(GUID, conv_id) {
             chatBoxId: conv_id,
           },
         });
-        // console.log(
-        //   'Message list fetched in pagination:',
-        //   messages.map(m => m.rawMessage),
-        // );
-        // console.log('doing pagination from ', lastMesId);
+        //now saving messages to db
+        messages.map(message => {
+          db_createGroupMessages(
+            JSON.stringify(message.rawMessage),
+            message.rawMessage.sender,
+            message.rawMessage.sentAt,
+            +message.rawMessage.id,
+            conv_id,
+          );
+        });
       } catch (error) {
         console.log('Message fetching failed with error:', error);
       }
+    }
+  };
+}
+
+//to load messages after some message (when user open app after lot of days)
+export function nextGroupMessages(GUID, conv_id) {
+  const limit = 100;
+  return async (dispatch, getState) => {
+    const len = getState().messages.data[conv_id].length;
+    let latestMesId = getState().messages.data[conv_id][len - 1].id;
+    let messagesRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(GUID)
+      .setMessageId(latestMesId)
+      .setLimit(limit)
+      .build();
+
+    try {
+      dispatch({type: 'messages/loading'});
+      const messages = await messagesRequest.fetchNext();
+
+      dispatch({
+        type: 'messages/fetched_inEnd',
+        payload: {
+          messages: messages.map(message => message.rawMessage),
+          chatBoxId: conv_id,
+        },
+      });
+      //now saving messages to db
+      messages.map(message => {
+        db_createGroupMessages(
+          JSON.stringify(message.rawMessage),
+          message.rawMessage.sender,
+          message.rawMessage.sentAt,
+          +message.rawMessage.id,
+          conv_id,
+        );
+      });
+      console.log('found ', messages.length, ' messages');
+      if (messages.length === 100) {
+        dispatch(nextGroupMessages(GUID, conv_id));
+      }
+    } catch (error) {
+      console.log('Message fetching failed with error:', error);
     }
   };
 }
@@ -181,6 +246,14 @@ export function sendMessage(text, isGroup, receiverID, conv_id) {
           },
         });
         console.log('Message sent successfully:', message);
+        // now also save to db
+        db_createGroupMessages(
+          JSON.stringify(message.rawMessage),
+          message.rawMessage.sender,
+          message.rawMessage.sentAt,
+          +message.rawMessage.id,
+          conv_id,
+        );
       },
       error => {
         console.log('Message sending failed with error:', error);
