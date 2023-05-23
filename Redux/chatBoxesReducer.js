@@ -82,7 +82,7 @@ export function selectChatBoxes(state) {
 }
 
 // create a group with the logged in user as admin
-export function createChatBox(GUID, groupName, onSuccess, onFail) {
+export function createGroup(GUID, groupName, onSuccess, onFail) {
   return async (dispatch, getState) => {
     const UID = getState().user.id;
     let groupType = CometChat.GROUP_TYPE.PUBLIC;

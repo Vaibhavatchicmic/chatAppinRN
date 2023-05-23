@@ -1,11 +1,14 @@
+import {createGroup} from './chatBoxesReducer';
+
 const {createSlice} = require('@reduxjs/toolkit');
 
 const AddEditPageSlice = createSlice({
+  active: false,
   name: 'AddEditPageData',
   initialState: {
     heading: 'New Group',
     inputs: [],
-    toDispatchOnDone: null,
+    toDispatchOnDone: null, //"createGroup"
   },
   reducers: {
     set: (state, action) => {
@@ -13,6 +16,10 @@ const AddEditPageSlice = createSlice({
     },
   },
 });
+
+const DoneFun = {
+  createGroup: createGroup,
+};
 
 export const AddEditPageReducer = AddEditPageSlice.reducer;
 

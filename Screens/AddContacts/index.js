@@ -1,15 +1,22 @@
 import {View, Text, StatusBar, Pressable} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import MySearchBar from '../Home/MySearchBar';
 import {styles} from './Styles';
 import RoundImage from '../Widgets/RoundImage';
 import {G, Path, Svg} from 'react-native-svg';
 import {on} from '@nozbe/watermelondb/QueryDescription';
 import {createChatBox} from '../../Redux/currentChatBoxReducer';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectAddEditPageData} from '../../Redux/AddEditPageReducer';
 
 const AddContacts = ({navigation}) => {
   const dispatch = useDispatch();
+  const AddEditPageData = useSelector(selectAddEditPageData);
+  useEffect(() => {
+    if (AddEditPageData.active) {
+      navigation.navigate('AddEdit');
+    }
+  });
   return (
     <View>
       <MySearchBar SearchPlaceholder="Search Contact" />
@@ -36,6 +43,7 @@ const AddContacts = ({navigation}) => {
             }
             onPress={() => {
               dispatch({
+                active: true,
                 type: 'AddEditPageData/set',
                 payload: {
                   heading: 'New Group',
@@ -43,7 +51,7 @@ const AddContacts = ({navigation}) => {
                     {name: 'Group Id', value: ''},
                     {name: 'Group Name', value: ''},
                   ],
-                  toDispatchOnDone: () => createChatBox(),
+                  toDispatchOnDone: 'createGroup',
                 },
               });
             }}
