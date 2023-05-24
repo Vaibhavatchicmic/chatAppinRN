@@ -13,10 +13,15 @@ import {Path, Svg} from 'react-native-svg';
 import {useDispatch, useSelector} from 'react-redux';
 import {onDone, selectAddEditPageData} from '../../Redux/AddEditPageReducer';
 import {identicalArrays} from '@nozbe/watermelondb/utils/fp';
+import {fetchGroups} from '../../Redux/chatBoxesReducer';
 
 const AddEditPage = ({navigation}) => {
   const dispatch = useDispatch();
   const data = useSelector(selectAddEditPageData);
+  function onSuccess() {
+    navigation.navigate('Home');
+    dispatch(fetchGroups());
+  }
   // console.log(data);
   return (
     <View style={styles.Page}>
@@ -58,7 +63,9 @@ const AddEditPage = ({navigation}) => {
         }}
       />
       {/* Done btn */}
-      <Pressable style={styles.doneBtn} onPress={() => dispatch(onDone())}>
+      <Pressable
+        style={styles.doneBtn}
+        onPress={() => dispatch(onDone(onSuccess))}>
         <Svg
           xmlns="http://www.w3.org/2000/svg"
           height={30}

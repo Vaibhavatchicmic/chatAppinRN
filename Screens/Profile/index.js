@@ -64,11 +64,13 @@ const Profile = ({navigation}) => {
       {/* body with sign out */}
       <ScrollView>
         {/* Various buttons */}
-        <ClickElement text={'Messages'} />
-        <ClickElement text={'Change Password'} />
-        <ClickElement text={'Support'} />
-        <ClickElement text={'Privacy Policy'} />
-        <ClickElement text={'Sign Out'} onPress={handleSignOut} />
+        <ClickElement
+          text={'Messages'}
+          onPress={() => navigation.navigate('ChatBoxes')}
+        />
+        {/* <ClickElement text={'Change Password'}/> */}
+        {/* <ClickElement text={'Support'} /> */}
+        {/* <ClickElement text={'Privacy Policy'} /> */}
         <ClickElement
           text={'clear storage'}
           onPress={() => {
@@ -76,6 +78,7 @@ const Profile = ({navigation}) => {
             Alert.alert('All local Data cleared');
           }}
         />
+        <ClickElement text={'Sign Out'} onPress={handleSignOut} />
       </ScrollView>
     </View>
   );

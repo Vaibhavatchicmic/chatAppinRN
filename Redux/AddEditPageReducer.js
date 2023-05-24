@@ -32,11 +32,12 @@ export function selectAddEditPageData(state) {
   return state.AddEditPageData;
 }
 
-export function onDone() {
+export function onDone(onSuccess) {
   return async (dispatch, getState) => {
     const toDisFun = DoneFun[getState().AddEditPageData.toDispatchOnDone];
     const GUID = getState().AddEditPageData.inputs[0].value;
     const groupName = getState().AddEditPageData.inputs[1].value;
     dispatch(toDisFun(GUID, groupName));
+    onSuccess();
   };
 }

@@ -2,8 +2,16 @@ import {View, Text, StatusBar, TextInput, Pressable} from 'react-native';
 import React from 'react';
 import Styles from './Styles';
 import {Svg, Path} from 'react-native-svg';
+import {useDispatch} from 'react-redux';
+import {fetchGroups} from '../../Redux/chatBoxesReducer';
 
-const MySearchBar = ({SearchPlaceholder}) => {
+const MySearchBar = ({
+  SearchPlaceholder,
+  icon,
+  iconPress,
+  filtering,
+  setFilterValue,
+}) => {
   return (
     <View>
       <StatusBar backgroundColor="#771F98" barStyle={'light-content'} />
@@ -12,27 +20,38 @@ const MySearchBar = ({SearchPlaceholder}) => {
         <View style={Styles.SearchInputCon}>
           <Searchbtn />
           <TextInput
+            onChangeText={val => {
+              if (filtering) {
+                setFilterValue(val);
+              }
+            }}
             placeholder={SearchPlaceholder}
             style={Styles.SearchInput}
           />
         </View>
 
         {/* QR opener */}
-        <Pressable style={Styles.QR_opener}>
-          <Svg
-            width={24}
-            height={20}
-            viewBox="0 0 24 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <Path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M3.595 15.004c0 1.728 1.427 3.134 3.181 3.134h1.319c.441 0 .8.353.8.788a.794.794 0 01-.8.788H6.776c-2.636 0-4.781-2.113-4.781-4.71l-.001-3.493H.8a.794.794 0 01-.8-.787c0-.435.358-.788.8-.788l1.98-.002h18.44l1.98.002c.442 0 .8.353.8.788a.794.794 0 01-.8.788l-1.195-.001v3.493c0 2.597-2.145 4.71-4.781 4.71h-1.286a.794.794 0 01-.8-.788c0-.435.358-.788.8-.788h1.286c1.754 0 3.181-1.406 3.181-3.134v-3.493H3.594v3.493zM17.223 0c2.637 0 4.782 2.113 4.782 4.709v1.59a.794.794 0 01-.8.789.794.794 0 01-.8-.788V4.709c0-1.727-1.427-3.133-3.182-3.133h-1.285a.794.794 0 01-.8-.788c0-.435.358-.788.8-.788h1.285zM8.095 0c.442 0 .8.353.8.788a.794.794 0 01-.8.788H6.777c-1.755 0-3.182 1.406-3.182 3.133v1.59a.794.794 0 01-.8.789.794.794 0 01-.8-.788V4.709C1.995 2.113 4.14 0 6.777 0h1.318z"
-              fill="#000"
-            />
-          </Svg>
-        </Pressable>
+        {icon === 'reload' && (
+          <Pressable
+            style={Styles.QR_opener}
+            onPress={() => {
+              if (iconPress) {
+                iconPress();
+              }
+            }}>
+            <Svg
+              rotation={180}
+              xmlns="http://www.w3.org/2000/svg"
+              width={24}
+              height={24}
+              viewBox="0 0 24 24">
+              <Path
+                d="M2 12a9 9 0 009 9c2.39 0 4.68-.94 6.4-2.6l-1.5-1.5A6.706 6.706 0 0111 19c-6.24 0-9.36-7.54-4.95-11.95C10.46 2.64 18 5.77 18 12h-3l4 4h.1l3.9-4h-3a9 9 0 00-18 0z"
+                fill="#74179b"
+              />
+            </Svg>
+          </Pressable>
+        )}
       </View>
     </View>
   );

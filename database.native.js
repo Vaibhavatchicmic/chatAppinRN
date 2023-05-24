@@ -117,14 +117,6 @@ export async function db_createGroupMessages(
   mesId, //number
   chatBoxId = GUID,
 ) {
-  // console.log(
-  //   'creating new message in db',
-  //   text,
-  //   chatBoxId,
-  //   senderId,
-  //   sentAt,
-  //   mesId,
-  // );
   const message = await database.write(async () => {
     const message = await database.get('messages').create(message => {
       message.text = text;
@@ -138,9 +130,34 @@ export async function db_createGroupMessages(
   });
 }
 
+// only clear messages
 export async function db_clearDatabase() {
   await database.write(async () => {
     await database.get('messages').query().destroyAllPermanently();
     console.log('cleared all messages');
   });
+}
+//clear groups
+export async function db_clearGroups() {
+  await database.write(async () => {
+    await database.get('chats').query().destroyAllPermanently();
+    console.log('cleared all groups');
+  });
+}
+export async function db_readGroups() {
+  let groups = await database.read(async () => {
+    const groupsCollection = await database.get('chats').query();
+    return groupsCollection;
+  });
+  // console.log(groups.map(group => group._raw));
+  return groups.map(group => group._raw);
+}
+
+export async function db_createGroup(data) {
+  const group = await database.write(async () => {
+    const group = await database.get('chats').create(chat => {
+      chat.name = data;
+    });
+  });
+  // console.log('created groups in db', data);
 }

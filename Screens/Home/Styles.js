@@ -18,7 +18,8 @@ export default StyleSheet.create({
   Searchbtn: {},
   QR_opener: {
     backgroundColor: '#F1F1F1',
-    padding: 10,
+    // paddingTop: 10,
+    padding: 5,
     borderRadius: 10,
   },
   MySearchBar: {

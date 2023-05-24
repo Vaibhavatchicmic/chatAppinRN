@@ -15,8 +15,8 @@ export class Chat extends Model {
 
   //   model fields (defined with decorators)
   @text('name') name; //trim whitespaces
-  @field('is_group') isGroup;
-  @children('messages') messages;
+  @field('is_group') data; //now using it as data
+  // @children('messages') data;
 }
 
 export class Messages extends Model {

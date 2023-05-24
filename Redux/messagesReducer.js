@@ -6,6 +6,7 @@ import {CometChat} from '@cometchat-pro/react-native-chat';
 import {startWith} from '@nozbe/watermelondb/utils/rx';
 import {selectCurrentChatBox} from './currentChatBoxReducer';
 import {db_createGroupMessages} from '../database.native';
+import {Alert} from 'react-native';
 let mesId = 1000;
 
 const messagesSlice = createSlice({
@@ -20,8 +21,14 @@ const messagesSlice = createSlice({
     loading: (state, action) => {
       state.status = 'loading';
     },
+    failed: (state, action) => {
+      state.status = 'failed';
+    },
     loadingAgain: (state, action) => {
       state.status = 'loadingAgain';
+    },
+    failed2: (state, action) => {
+      state.status = 'idle';
     },
     //for lot of messages
     fetched_inStart: (state, action) => {
@@ -121,6 +128,11 @@ export function fetchGroupMessages(GUID, conv_id) {
         );
       });
     } catch (error) {
+      dispatch({type: 'messages/failed'});
+      if (error.message) {
+        Alert.alert(error.code, error.message);
+      }
+
       console.log('Message fetching failed with error:', error);
     }
   };
@@ -179,6 +191,11 @@ export function paginationGroupMessages(GUID, conv_id) {
           );
         });
       } catch (error) {
+        dispatch({type: 'messages/failed2'});
+        if (error.message) {
+          Alert.alert(error.code, error.message);
+        }
+
         console.log('Message fetching failed with error:', error);
       }
     }
@@ -223,6 +240,11 @@ export function nextGroupMessages(GUID, conv_id) {
         dispatch(nextGroupMessages(GUID, conv_id));
       }
     } catch (error) {
+      dispatch({type: 'messages/failed2'});
+      if (error.message) {
+        Alert.alert(error.code, error.message);
+      }
+
       console.log('Message fetching failed with error:', error);
     }
   };

@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import MySearchBar from '../Home/MySearchBar';
 import {styles} from './Styles';
 import RoundImage from '../Widgets/RoundImage';
-import {G, Path, Svg} from 'react-native-svg';
+import {G, Image, Path, Svg} from 'react-native-svg';
 import {on} from '@nozbe/watermelondb/QueryDescription';
 import {createChatBox} from '../../Redux/currentChatBoxReducer';
 import {useDispatch, useSelector} from 'react-redux';
@@ -27,8 +27,9 @@ const AddContacts = ({navigation}) => {
             text="New group"
             img={
               <Svg
+                style={{width: '100%'}}
                 xmlns="http://www.w3.org/2000/svg"
-                height={96}
+                height={40}
                 viewBox="0 0 24 24"
                 width={96}>
                 <G fill="none">
@@ -57,7 +58,7 @@ const AddContacts = ({navigation}) => {
               });
             }}
           />
-          <AddNew text="New contact" />
+          {/* <AddNew text="New contact" /> */}
         </View>
       </View>
     </View>
@@ -67,9 +68,9 @@ const AddContacts = ({navigation}) => {
 function AddNew({img, text, onPress}) {
   return (
     <Pressable style={styles.AddNew} onPress={onPress}>
-      {/* <RoundImage img={img} /> */}
+      <RoundImage img={img} />
       {/* {img} */}
-      <Text>{text}</Text>
+      <Text style={{fontSize: 20}}>{text}</Text>
     </Pressable>
   );
 }
