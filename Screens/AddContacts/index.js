@@ -46,6 +46,7 @@ const AddContacts = ({navigation}) => {
                 active: true,
                 type: 'AddEditPageData/set',
                 payload: {
+                  active: true,
                   heading: 'New Group',
                   inputs: [
                     {name: 'Group Id', value: ''},

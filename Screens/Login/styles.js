@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
     color: 'purple',
   },
   alt_navigate: {
-    marginTop: 20,
+    marginVertical: 20,
     flexDirection: 'row',
     marginLeft: 'auto',
     marginRight: 'auto',
@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 20,
     color: 'black',
-    paddingBottom: 5,
+    padding: 5,
   },
   Tilted_image: {
     position: 'absolute',
@@ -92,6 +92,6 @@ export const styles = StyleSheet.create({
   },
   text_center: {
     textAlign: 'center',
-    padding: 5,
+    // padding: 5,
   },
 });

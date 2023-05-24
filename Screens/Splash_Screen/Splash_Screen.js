@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {Image, Text, View, StatusBar, Alert} from 'react-native';
+import {Image, Text, View, StatusBar, Alert, Dimensions} from 'react-native';
 import MyModal from '../Widgets/Modal';
 import {useSelector} from 'react-redux';
 import {selectUsername} from '../../Redux/store';
@@ -17,6 +17,7 @@ export default function SplashScreen({navigation}) {
   //   }
   // });
   console.log(user.status);
+  const {width} = Dimensions.get('window');
   return (
     <View style={{backgroundColor: '#F8F8F8', flex: 1}}>
       {user.status === 'loading' ? (
@@ -37,6 +38,8 @@ export default function SplashScreen({navigation}) {
           </View>
           <View style={styles.Image}>
             <Image
+              resizeMode="contain"
+              style={{width: '100%', overflow: 'visible'}}
               source={require('../../Assets/f825d97434ba2e93efa9c9d869e95c6c.png')}
             />
           </View>

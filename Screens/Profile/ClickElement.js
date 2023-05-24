@@ -5,7 +5,9 @@ import {styles} from './styles';
 
 const ClickElement = ({text, onPress}) => {
   return (
-    <Pressable onPress={onPress} style={[styles.ClickElement, styles.pad_h]}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.ClickElement, styles.pad_h, {marginVertical: 1}]}>
       <Text
         style={[
           styles.Text2,

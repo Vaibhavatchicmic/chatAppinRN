@@ -70,12 +70,14 @@ export async function db_readGroupMessages(
 ) {
   let messages = await database.read(async () => {
     console.log('searching in db', ID, lastMesId);
-    const MessagesCollection = await database.get('messages').query(
-      // Q.where('chat_id', Q.eq(ID)),
-      Q.where('mes_id', lt(+lastMesId)),
-      Q.take(limit),
-      Q.sortBy('mes_id', Q.desc),
-    );
+    const MessagesCollection = await database
+      .get('messages')
+      .query(
+        Q.where('chat_id', Q.eq(ID)),
+        Q.where('mes_id', lt(+lastMesId)),
+        Q.take(limit),
+        Q.sortBy('mes_id', Q.desc),
+      );
     // for (let i of MessagesCollection) {
     //   console.log(i);
     // }

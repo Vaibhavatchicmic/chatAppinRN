@@ -47,20 +47,17 @@ const chatBoxesSlice = createSlice({
     loading: (state, action) => {
       state.status = 'loading';
     },
+    //not correct
     created: (state, action) => {
-      state.push({
-        name: action.payload.name,
-        isGroup: action.payload.isGroup,
-        id: action.payload.id || ++chatId,
-        readTill: action.payload.time || Date.now(),
-        IreadTill: action.payload.time || Date.now(),
-        messages: [],
-      });
+      state.push(action.payload.chatBox);
     },
     deleted: (state, action) => {
       return state.filter(chatBox => {
         return chatBox.id !== action.payload.id;
       });
+    },
+    joined: (state, action) => {
+      state.data[action.payload.guid].isMember = true;
     },
   },
 });
@@ -82,8 +79,14 @@ export function selectChatBoxes(state) {
 }
 
 // create a group with the logged in user as admin
-export function createGroup(GUID, groupName, onSuccess, onFail) {
+export function createGroup(
+  GUID,
+  groupName,
+  onSuccess = () => {},
+  onFail = () => {},
+) {
   return async (dispatch, getState) => {
+    console.log('creating group of guid:', GUID, ' name: ', groupName);
     const UID = getState().user.id;
     let groupType = CometChat.GROUP_TYPE.PUBLIC;
 
@@ -96,6 +99,19 @@ export function createGroup(GUID, groupName, onSuccess, onFail) {
     CometChat.createGroupWithMembers(group, members, banMembers).then(
       response => {
         console.log('Group created successfully', response);
+        // create new group
+        dispatch({
+          type: '',
+          payload: {
+            name: group.name,
+            isGroup: true,
+            icon: group.icon,
+            id: group.guid,
+            conv_id: group.conversationId,
+            isMember: group.hasJoined,
+            // avatar: group.avatar,
+          },
+        });
         onSuccess();
       },
       error => {

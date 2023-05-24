@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     // display: 'none',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#b0aeae',
   },
   modal_con: {
     padding: 10,

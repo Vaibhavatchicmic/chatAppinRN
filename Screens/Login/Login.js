@@ -5,8 +5,8 @@ import {
   View,
   StatusBar,
   Alert,
-  KeyboardAvoidingView,
   Keyboard,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import BackButton from '../Widgets/BackButton';
@@ -25,14 +25,14 @@ import {AUTH_KEY} from '../../Utility/CometChat';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({UserId: '', Password: ''});
-  const isKeyBoard = useIsKeyBoard();
+  // const isKeyBoard = useIsKeyBoard();
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   useEffect(() => {
     console.log('Login mounted');
     // if(user.status==="")
   }, []);
-
+  const isKeyBoard = false;
   function handleChangeInputs(name, val) {
     setInputs({
       ...inputs,
@@ -67,7 +67,7 @@ export default function Login({navigation}) {
         );
         setInputs({UserId: '', Password: ''});
       } catch (e) {
-        Alert.alert('network request failed');
+        Alert.alert('Login failed', e.message?.replaceAll('UID', 'User Id'));
         console.error(e);
         dispatch({
           type: 'user/failed',
@@ -94,8 +94,16 @@ export default function Login({navigation}) {
     Submit_text: 'Login',
     isSubmitting: user.status === 'submitting',
     onSubmit() {
-      if (inputs.Email === '') {
-        Alert.alert("UserId can't be empty");
+      var regexp = /^[a-zA-Z0-9-_]+$/;
+
+      if (inputs.UserId === '') {
+        Alert.alert("User Id can't be empty");
+        return;
+      } else if (inputs.UserId.search(regexp) === -1) {
+        Alert.alert(
+          'Invalid User Id!',
+          'User Id can be alphanumeric with underscore and hyphen. Spaces, punctuation and other special characters are not allowed',
+        );
         return;
       } else if (inputs.Password === '') {
         Alert.alert("Passward can't be empty");
@@ -106,7 +114,7 @@ export default function Login({navigation}) {
     inputs: [
       {
         id: 1,
-        label: 'Unique Id',
+        label: 'User Id',
         value: inputs.UserId,
         name: 'UserId',
         handleChangeInputs,
@@ -124,10 +132,9 @@ export default function Login({navigation}) {
   };
 
   return (
-    <View style={styles.con}>
+    <ScrollView overScrollMode="never" style={styles.con}>
       <MyStatusBar />
-
-      <KeyboardAvoidingView behavior="position">
+      <View behavior="position">
         {/* Back button */}
         <View style={[styles.Back_btn, styles.p_h]}>
           {isKeyBoard ? (
@@ -157,19 +164,22 @@ export default function Login({navigation}) {
         </View>
 
         <Form form_data={form_data} />
-      </KeyboardAvoidingView>
+      </View>
       {/* text */}
 
       {/* or login with */}
       <View
-        style={[styles.flexRow, {paddingBottom: 30, paddingHorizontal: 20}]}>
+        style={[
+          styles.flexRow,
+          {paddingBottom: 30, paddingHorizontal: 20, display: 'none'},
+        ]}>
         <View style={styles.Horizontal_Line} />
         <Text style={styles.Text}>Or Login With</Text>
         <View style={styles.Horizontal_Line} />
       </View>
 
       {/* other login icons */}
-      <View style={[styles.flexRow, {paddingHorizontal: 60}]}>
+      <View style={[styles.flexRow, {paddingHorizontal: 60, display: 'none'}]}>
         <Pressable>
           <Image
             // style={styles.Samll_Image}
@@ -199,6 +209,6 @@ export default function Login({navigation}) {
       />
 
       {/* <MyModal /> */}
-    </View>
+    </ScrollView>
   );
 }

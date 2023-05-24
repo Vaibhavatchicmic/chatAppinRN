@@ -44,7 +44,7 @@ export default StyleSheet.create({
     flexDirection: 'column',
   },
   ChatBoxElement: {
-    marginTop: 32,
+    marginBottom: 32,
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderWidth: 2,
@@ -65,7 +65,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    paddingTop: 10,
+    paddingVertical: 10,
     fontFamily: 'Poppins',
     fontSize: 20,
     color: '#771f98',

@@ -20,6 +20,9 @@ const messagesSlice = createSlice({
     loading: (state, action) => {
       state.status = 'loading';
     },
+    loadingAgain: (state, action) => {
+      state.status = 'loadingAgain';
+    },
     //for lot of messages
     fetched_inStart: (state, action) => {
       state.data[action.payload.chatBoxId] = [
@@ -41,6 +44,7 @@ const messagesSlice = createSlice({
         ...action.payload.messages,
         ...state.data[action.payload.chatBoxId],
       ];
+      state.status = 'idle';
     },
     init: (state, action) => {
       // console.log('initiating messages for', action.payload.chatBoxId, state);
@@ -144,6 +148,7 @@ export function paginationGroupMessages(GUID, conv_id) {
         .build();
 
       try {
+        dispatch({type: 'messages/loadingAgain'});
         const messages = await messagesRequest.fetchPrevious();
 
         const mes = getState().messages.data[conv_id];
@@ -193,7 +198,7 @@ export function nextGroupMessages(GUID, conv_id) {
       .build();
 
     try {
-      dispatch({type: 'messages/loading'});
+      dispatch({type: 'messages/loadingAgain'});
       const messages = await messagesRequest.fetchNext();
 
       dispatch({

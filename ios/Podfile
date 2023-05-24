@@ -58,3 +58,13 @@ target 'AwesomeProject2' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+
+# Uncomment this line if you're not using auto-linking
+# pod 'WatermelonDB', path: '../node_modules/@nozbe/watermelondb'
+
+# WatermelonDB dependency, should not be needed on modern React Native
+# (please file an issue if this causes issues for you)
+# pod 'React-jsi', path: '../node_modules/react-native/ReactCommon/jsi', modular_headers: true
+
+# WatermelonDB dependency
+pod 'simdjson', path: '../node_modules/@nozbe/simdjson', modular_headers: true

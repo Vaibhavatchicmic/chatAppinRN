@@ -26,6 +26,25 @@ export function Register({navigation}) {
     // console.log('inputs :', inputs);
   }
   async function handleRegister(dispatch, getState) {
+    var regexp = /^[a-zA-Z0-9-_]+$/;
+
+    if (inputs.Name === '') {
+      Alert.alert("Name can't be empty");
+      return;
+    } else if (inputs.UserId === '') {
+      Alert.alert("User Id can't be empty");
+      return;
+    } else if (inputs.UserId.search(regexp) === -1) {
+      Alert.alert(
+        'Invalid User Id!',
+        'User Id can be alphanumeric with underscore and hyphen. Spaces, punctuation and other special characters are not allowed',
+      );
+      return;
+    } else if (inputs.Password === '') {
+      Alert.alert("Passward can't be empty");
+      return;
+    }
+
     console.log('registering');
 
     dispatch({
@@ -61,7 +80,16 @@ export function Register({navigation}) {
       // }
       setInputs({Name: '', UserId: '', Password: ''});
     } else {
-      Alert.alert('network request failed');
+      if (res.message) {
+        Alert.alert(res.message);
+      } else {
+        Alert.alert(
+          'Register failed',
+          res.error?.message
+            ? res.error?.message.replaceAll('uid', 'User Id')
+            : '',
+        );
+      }
 
       dispatch({
         type: 'user/failed',
@@ -80,7 +108,7 @@ export function Register({navigation}) {
     inputs: [
       {
         id: 1,
-        label: 'Your username',
+        label: 'Your Name',
         value: inputs.Name,
         name: 'Name',
         handleChangeInputs,
@@ -88,7 +116,7 @@ export function Register({navigation}) {
       },
       {
         id: 2,
-        label: 'Unique Id',
+        label: 'User Id',
         value: inputs.UserId,
         name: 'UserId',
         handleChangeInputs,
@@ -105,7 +133,7 @@ export function Register({navigation}) {
     ],
   };
   return (
-    <ScrollView style={styles.con}>
+    <ScrollView style={styles.con} overScrollMode="never">
       <MyStatusBar />
       {/* Back button */}
 

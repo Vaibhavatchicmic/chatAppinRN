@@ -13,7 +13,7 @@ export function Form({form_data}) {
           <CustomFormInput key={input.id} {...input} />
         ))}
       </View>
-      <MyButton onPress={form_data.onSubmit}>
+      <MyButton onPress={form_data.onSubmit} disabled={form_data.isSubmitting}>
         {form_data.isSubmitting ? (
           <View
             style={{

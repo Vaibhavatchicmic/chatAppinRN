@@ -31,7 +31,7 @@ const configureCustomStore = () => {
     chatBoxes: chatBoxesReducer,
     messages: messagesReducer,
     currentChatBox: currentChatBoxReducer,
-    AddEditPage: AddEditPageReducer,
+    AddEditPageData: AddEditPageReducer,
   });
 
   const store = configureStore({

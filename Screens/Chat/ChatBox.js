@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Button,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import React, {memo, useContext, useEffect, useMemo} from 'react';
 import Svg, {Path} from 'react-native-svg';
@@ -24,6 +25,10 @@ import {
 } from '../../Redux/messagesReducer';
 import MyActivityIndicator from '../Widgets/MyActivityIndicator';
 import {db_readGroupMessages} from '../../database.native';
+import MyModal from '../Widgets/Modal';
+import {PreventRemoveContext} from '@react-navigation/native';
+import {CometChat} from '@cometchat-pro/react-native-chat';
+import Loading from '../Widgets/Loading';
 
 function TimeStamp(time) {
   const date = new Date(time * 1000);
@@ -73,7 +78,6 @@ export default function ChatBox({ScrollViewRef}) {
   const messages = useSelector(getMessagesByGroupId(chatBox.conv_id));
   const dispatch = useDispatch();
   // console.log('messages:', messages);
-
   useEffect(() => {
     const loadMes = async () => {
       let dbMessages = await db_readGroupMessages(chatBox.conv_id, 50);
@@ -100,12 +104,13 @@ export default function ChatBox({ScrollViewRef}) {
         console.log('messages not found in db making network request');
       }
     };
-    if (messages.length === 0) {
+    if (messages.length === 0 && chatBox.isMember === true) {
       loadMes();
     }
     console.log(chatBox.conv_id, 'chatBoxLoaded');
-  }, []);
+  }, [chatBox.isMember, chatBox.conv_id]);
   const isLoading = useSelector(selectMessageStatus) === 'loading';
+  const isLoadingAgain = useSelector(selectMessageStatus) === 'loadingAgain';
   let inverted_messages = [...messages];
   inverted_messages.reverse();
   for (let i = 0; i < inverted_messages.length - 1; i++) {
@@ -129,25 +134,56 @@ export default function ChatBox({ScrollViewRef}) {
   };
   return (
     <View style={{flex: 1}}>
-      {/* <Button
-        title="Click me"
-        onPress={() => {
-          dispatch(
-            paginationGroupMessages(
-              chatBox.id,
-              chatBox.conv_id,
-              messages[0].id,
-            ),
-          );
-        }}
-      /> */}
-      {isLoading ? (
+      {isLoadingAgain && <Loading />}
+      {chatBox.isMember !== true ? (
+        <MyModal heading="You are not a member">
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 20,
+            }}>
+            <Pressable
+              onPress={() => {
+                let GUID = chatBox.id;
+                let UID = user.id;
+                let membersList = [
+                  new CometChat.GroupMember(
+                    UID,
+                    CometChat.GROUP_MEMBER_SCOPE.PARTICIPANT,
+                  ),
+                ];
+                CometChat.joinGroup(GUID, CometChat.GROUP_TYPE.PUBLIC, '').then(
+                  response => {
+                    console.log('response', response);
+                    dispatch({
+                      type: 'chatBoxes/joined',
+                      payload: {
+                        guid: chatBox.conv_id,
+                      },
+                    });
+                  },
+                  error => {
+                    console.log('Something went wrong', error);
+                  },
+                );
+              }}
+              style={{
+                backgroundColor: 'purple',
+                padding: 10,
+                borderRadius: 10,
+              }}>
+              <Text style={{color: 'white'}}>Become a Member</Text>
+            </Pressable>
+          </View>
+        </MyModal>
+      ) : isLoading ? (
         <MyActivityIndicator />
       ) : (
         <FlatList
-          alwaysBounceHorizontal={false}
-          alwaysBounceVertical={false}
-          bounces={false}
+          // alwaysBounceHorizontal={false}
+          // alwaysBounceVertical={false}
+          // bounces={false}
           onEndReachedThreshold={0.5}
           overScrollMode="never"
           scrollToOverflowEnabled={false}
@@ -188,18 +224,33 @@ export default function ChatBox({ScrollViewRef}) {
 
             return (
               <View>
-                {mes.isnewDate && <ChatNewDate text={DateStamp(mes.sentAt)} />}
                 {mes.type === 'text' && (
-                  <ChatText
-                    text={mes.data.text}
-                    me={user.id === mes.sender}
-                    time={mes.sentAt}
-                    isread={chatBox.readTill >= mes.time}
-                    key={mes.id}
-                    sender={mes.data.entities.sender.entity.name}
-                    SSAP={!mes.isnewDate && mes.SenderSameAsPrevious}
-                    // TSAP={mes.TimeSameAsPrevious}
-                  />
+                  <>
+                    {mes.isnewDate && (
+                      <ChatNewDate text={DateStamp(mes.sentAt)} />
+                    )}
+                    <ChatText
+                      text={mes.data.text}
+                      me={user.id === mes.sender}
+                      time={mes.sentAt}
+                      isread={chatBox.readTill >= mes.time}
+                      key={mes.id}
+                      sender={mes.data.entities.sender.entity.name}
+                      SSAP={!mes.isnewDate && mes.SenderSameAsPrevious}
+                      // TSAP={mes.TimeSameAsPrevious}
+                    />
+                  </>
+                )}
+                {mes.category === 'action' && mes.data.action === 'joined' && (
+                  <>
+                    {mes.isnewDate && (
+                      <ChatNewDate text={DateStamp(mes.sentAt)} />
+                    )}
+
+                    <Text style={styles.NewJoined}>
+                      {mes.data.entities?.by?.entity?.name} Joined{' '}
+                    </Text>
+                  </>
                 )}
               </View>
             );
@@ -270,6 +321,15 @@ function ChatNewDate({text}) {
   );
 }
 const styles = StyleSheet.create({
+  NewJoined: {
+    alignSelf: 'center',
+    color: 'purple',
+    marginBottom: 20,
+    backgroundColor: '#dbc4e6',
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+  },
   Text: {
     fontFamily: 'Poppins',
     fontSize: 14,

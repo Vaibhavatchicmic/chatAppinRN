@@ -5,37 +5,60 @@ import {
   ScrollView,
   TextInput,
   Pressable,
+  FlatList,
 } from 'react-native';
 import React from 'react';
 import BackButton, {BackButton2} from '../Widgets/BackButton';
 import {Path, Svg} from 'react-native-svg';
-import {useSelector} from 'react-redux';
-import {selectAddEditPageData} from '../../Redux/AddEditPageReducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {onDone, selectAddEditPageData} from '../../Redux/AddEditPageReducer';
+import {identicalArrays} from '@nozbe/watermelondb/utils/fp';
 
 const AddEditPage = ({navigation}) => {
+  const dispatch = useDispatch();
   const data = useSelector(selectAddEditPageData);
-  console.log(data);
+  // console.log(data);
   return (
     <View style={styles.Page}>
       {/* heading */}
       <View style={[styles.header, styles.padH]}>
-        <BackButton2 fill="white" onPress={() => navigation.navigate('Home')} />
+        <BackButton2 fill="white" onPress={() => navigation.goBack()} />
         {/* Heading */}
         <Text style={styles.heading}>{data.heading}</Text>
       </View>
-      <ScrollView style={[{flex: 1}, styles.padH]}>
-        {/* Add edit image */}
+      {/* <ScrollView style={[{flex: 1}, styles.padH]}>
         <View style={styles.form}>
-          {/* select/edit image */}
           <View style={styles.editImage}>
             <Text>Image</Text>
           </View>
           <TextField placeholder="Group Name" />
           <TextField placeholder="Group Id" />
         </View>
-      </ScrollView>
+      </ScrollView> */}
+      <FlatList
+        style={styles.FlatList}
+        data={data.inputs}
+        renderItem={({item, index}) => {
+          return (
+            <TextField
+              placeholder={item.name}
+              value={item.value}
+              onChange={val => {
+                // console.log(index, val);
+                dispatch({
+                  type: 'AddEditPageData/setInput',
+                  payload: {
+                    index: index,
+                    value: val,
+                  },
+                });
+              }}
+            />
+          );
+        }}
+      />
       {/* Done btn */}
-      <Pressable style={styles.doneBtn}>
+      <Pressable style={styles.doneBtn} onPress={() => dispatch(onDone())}>
         <Svg
           xmlns="http://www.w3.org/2000/svg"
           height={30}
@@ -54,11 +77,13 @@ const AddEditPage = ({navigation}) => {
 
 export default AddEditPage;
 
-function TextField({placeholder}) {
+function TextField({placeholder, value, onChange}) {
   return (
     <TextInput
+      onChangeText={onChange}
       style={styles.TextField}
       placeholder={placeholder}
+      value={value}
       cursorColor="#771F98"
     />
   );
@@ -86,8 +111,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 100,
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 22,
+    right: 22,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 20,
@@ -96,8 +121,9 @@ const styles = StyleSheet.create({
   TextField: {
     borderBottomWidth: 2,
     borderBottomColor: '#771F98',
-    backgroundColor: '#f4e8f8',
+    backgroundColor: '#f2d7fb',
     paddingHorizontal: 10,
+    marginTop: 20,
   },
   padH: {
     paddingHorizontal: 22,
@@ -110,5 +136,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  FlatList: {
+    paddingHorizontal: 22,
+    backgroundColor: 'white',
   },
 });

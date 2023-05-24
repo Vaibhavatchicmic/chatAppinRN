@@ -23,7 +23,6 @@ const ChatsList = ({navigation}) => {
       let limit = 30;
       let groupsRequest = new CometChat.GroupsRequestBuilder()
         .setLimit(limit)
-        .joinedOnly(true)
         .build();
 
       dispatch({type: 'chatBoxes/loading'});
@@ -38,8 +37,8 @@ const ChatsList = ({navigation}) => {
           icon: group.icon,
           id: group.guid,
           conv_id: group.conversationId,
+          isMember: group.hasJoined,
           // avatar: group.avatar,
-          messages: [],
         };
       });
       dispatch({
@@ -63,14 +62,13 @@ const ChatsList = ({navigation}) => {
   const chatBoxesData = Object.values(chatBoxes.data);
   // console.log('in Chatlist:', chatBoxes);
   return (
-    <View style={{paddingHorizontal: 22, flex: 1}}>
+    <View style={{flex: 1}}>
       {/* heading */}
 
       {isLoading ? (
         <MyActivityIndicator />
       ) : (
         <>
-          <Text style={Styles.heading}>Chats</Text>
           {/* ChatBoxList */}
           {/* <Button title="clickme" onPress={() => db_readGroupMessages('1')} />
           <Button
@@ -80,7 +78,10 @@ const ChatsList = ({navigation}) => {
             }
           /> */}
           <FlatList
+            style={{paddingHorizontal: 22}}
             data={chatBoxesData}
+            ListHeaderComponent={<Text style={[Styles.heading]}>Chats</Text>}
+            overScrollMode="never"
             renderItem={({item}) => {
               // console.log(item);
               return (
