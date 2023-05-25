@@ -141,8 +141,9 @@ export function paginationGroupMessages(GUID, conv_id) {
   return async (dispatch, getState) => {
     let lastMesId = getState().messages.data[conv_id][0].id;
     console.log('lastMesId', lastMesId);
-    if (lastMesId === '1') {
-      console.log('end reached');
+    if (lastMesId == '0') {
+      console.log('end reached'); //not work not 0 or 1 for every group
+      return;
     } else {
       let limit = LIMIT;
       let mesFrom = lastMesId;

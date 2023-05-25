@@ -180,82 +180,90 @@ export default function ChatBox({ScrollViewRef}) {
       ) : isLoading ? (
         <MyActivityIndicator />
       ) : (
-        <FlatList
-          // alwaysBounceHorizontal={false}
-          // alwaysBounceVertical={false}
-          // bounces={false}
-          onEndReachedThreshold={0.5}
-          overScrollMode="never"
-          scrollToOverflowEnabled={false}
-          keyExtractor={item => item.id}
-          onEndReached={async () => {
-            const dbMessages = await db_readGroupMessages(
-              chatBox.conv_id,
-              50,
-              messages[0].id,
-            );
-            if (dbMessages.length > 0) {
-              console.log(
-                'in pagination :messages found in db',
-                dbMessages.map(m => m.mes_id),
+        <>
+          <FlatList
+            // alwaysBounceHorizontal={false}
+            // alwaysBounceVertical={false}
+            // bounces={false}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: 'flex-end',
+            }}
+            onEndReachedThreshold={0.5}
+            overScrollMode="never"
+            scrollToOverflowEnabled={false}
+            keyExtractor={item => item.id}
+            onEndReached={async () => {
+              const dbMessages = await db_readGroupMessages(
+                chatBox.conv_id,
+                50,
+                messages[0].id,
               );
-              dispatch({
-                type: 'messages/fetched_inStart',
-                payload: {
-                  messages: dbMessages.map(data => JSON.parse(data.text)),
-                  chatBoxId: chatBox.conv_id,
-                },
-              });
-            } else {
-              dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
+              if (dbMessages.length > 0) {
+                console.log(
+                  'in pagination :messages found in db',
+                  dbMessages.map(m => m.mes_id),
+                );
+                dispatch({
+                  type: 'messages/fetched_inStart',
+                  payload: {
+                    messages: dbMessages.map(data => JSON.parse(data.text)),
+                    chatBoxId: chatBox.conv_id,
+                  },
+                });
+              } else {
+                dispatch(paginationGroupMessages(chatBox.id, chatBox.conv_id));
 
-              console.log(
-                'in pagination: messages not found in db making network request',
+                console.log(
+                  'in pagination: messages not found in db making network request',
+                );
+              }
+            }}
+            style={{paddingHorizontal: 20}}
+            ref={ScrollViewRef}
+            data={inverted_messages}
+            inverted={true}
+            renderItem={({item, index}) => {
+              // console.log('inside renderItem', item.id);
+              const mes = item;
+
+              return (
+                <View>
+                  {mes.type === 'text' && (
+                    <>
+                      {mes.isnewDate && (
+                        <ChatNewDate text={DateStamp(mes.sentAt)} />
+                      )}
+                      <ChatText
+                        text={mes.data.text}
+                        me={user.id === mes.sender}
+                        time={mes.sentAt}
+                        isread={chatBox.readTill >= mes.time}
+                        key={mes.id}
+                        sender={mes.data.entities.sender.entity.name}
+                        SSAP={!mes.isnewDate && mes.SenderSameAsPrevious}
+                        // TSAP={mes.TimeSameAsPrevious}
+                      />
+                    </>
+                  )}
+                  {mes.category === 'action' &&
+                    mes.data.action === 'joined' && (
+                      <>
+                        {mes.isnewDate && (
+                          <ChatNewDate text={DateStamp(mes.sentAt)} />
+                        )}
+
+                        <Text style={styles.NewJoined}>
+                          {mes.data.entities?.by?.entity?.name} Joined{' '}
+                        </Text>
+                      </>
+                    )}
+                </View>
               );
-            }
-          }}
-          style={{paddingHorizontal: 20}}
-          ref={ScrollViewRef}
-          data={inverted_messages}
-          inverted={true}
-          renderItem={({item, index}) => {
-            // console.log('inside renderItem', item.id);
-            const mes = item;
-
-            return (
-              <View>
-                {mes.type === 'text' && (
-                  <>
-                    {mes.isnewDate && (
-                      <ChatNewDate text={DateStamp(mes.sentAt)} />
-                    )}
-                    <ChatText
-                      text={mes.data.text}
-                      me={user.id === mes.sender}
-                      time={mes.sentAt}
-                      isread={chatBox.readTill >= mes.time}
-                      key={mes.id}
-                      sender={mes.data.entities.sender.entity.name}
-                      SSAP={!mes.isnewDate && mes.SenderSameAsPrevious}
-                      // TSAP={mes.TimeSameAsPrevious}
-                    />
-                  </>
-                )}
-                {mes.category === 'action' && mes.data.action === 'joined' && (
-                  <>
-                    {mes.isnewDate && (
-                      <ChatNewDate text={DateStamp(mes.sentAt)} />
-                    )}
-
-                    <Text style={styles.NewJoined}>
-                      {mes.data.entities?.by?.entity?.name} Joined{' '}
-                    </Text>
-                  </>
-                )}
-              </View>
-            );
-          }}
-        />
+            }}
+          />
+          {/* <View style={{max_height: '100%'}}></View>? */}
+        </>
       )}
     </View>
   );
