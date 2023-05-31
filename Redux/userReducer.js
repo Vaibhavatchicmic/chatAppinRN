@@ -8,10 +8,12 @@ import {
 } from '../database.native';
 import {CometChat} from '@cometchat-pro/react-native-chat';
 import {action} from '@nozbe/watermelondb/decorators';
+import {Alert} from 'react-native';
+import {AUTH_KEY} from '../Utility/CometChat';
 
 let userId = 1000;
 
-const user = {
+const initUser = {
   status: 'no_user', // 'no_user'|'idle' | 'login_submitting' | 'login_succeeded' | 'login_failed'| 'register_submitting' |'register_succeeded','register_failed',
   // username: 'Vaibhav',
   // token: 'abcd',
@@ -20,7 +22,7 @@ const user = {
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: user,
+  initialState: initUser,
   reducers: {
     login: (state, action) => {
       state.status = 'idle';
@@ -133,3 +135,51 @@ export const remUserFromDB_f = () => async (dispatch, getState) => {
     type: 'user/logout',
   });
 };
+
+export const handleLogin =
+  (UserId, Password, setInputs) => async (dispatch, getState) => {
+    console.log('loging');
+
+    dispatch({
+      type: 'user/submit',
+    });
+
+    const user = await CometChat.getLoggedinUser();
+
+    if (!user) {
+      console.log('trying to login');
+      try {
+        const res = await CometChat.login(UserId, AUTH_KEY);
+        console.log(res);
+        dispatch(
+          setUserInDB_f({
+            name: res.name,
+            token: res.authToken,
+            password: Password,
+            uid: res.uid,
+          }),
+        );
+        setInputs({UserId: '', Password: ''});
+      } catch (e) {
+        Alert.alert('Login failed', e.message?.replaceAll('UID', 'User Id'));
+        console.error(e);
+        dispatch({
+          type: 'user/failed',
+          // payload: {
+          //   message: 'network request failed',
+          // },
+        });
+      }
+    } else {
+      console.log('user already logged', user);
+      dispatch(
+        setUserInDB_f({
+          name: user.name,
+          token: user.authToken,
+          password: Password,
+          uid: user.uid,
+        }),
+      );
+      setInputs({UserId: '', Password: ''});
+    }
+  };

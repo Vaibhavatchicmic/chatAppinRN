@@ -19,9 +19,14 @@ import {AltNavigate} from './AltNavigate';
 import {styles} from './styles';
 import MySearchBar from '../Home/MySearchBar';
 import MyStatusBar from '../Widgets/MyStatusBar';
-import {selectCurrentUser, setUserInDB_f} from '../../Redux/userReducer';
+import {
+  handleLogin,
+  selectCurrentUser,
+  setUserInDB_f,
+} from '../../Redux/userReducer';
 import {CometChat} from '@cometchat-pro/react-native-chat';
 import {AUTH_KEY} from '../../Utility/CometChat';
+import LoginWithGoogleBtn, {signInWithGoogle} from '../../Utility/GoogleAuth';
 
 export default function Login({navigation}) {
   const [inputs, setInputs] = useState({UserId: '', Password: ''});
@@ -43,52 +48,6 @@ export default function Login({navigation}) {
     // console.log('inputs :', inputs);
   }
   // const isKeyBoard = false;
-  async function handleLogin() {
-    console.log('loging');
-
-    dispatch({
-      type: 'user/submit',
-    });
-
-    const user = await CometChat.getLoggedinUser();
-
-    if (!user) {
-      console.log('trying to login');
-      try {
-        const res = await CometChat.login(inputs.UserId, AUTH_KEY);
-        console.log(res);
-        dispatch(
-          setUserInDB_f({
-            name: res.name,
-            token: res.authToken,
-            password: inputs.Password,
-            uid: res.uid,
-          }),
-        );
-        setInputs({UserId: '', Password: ''});
-      } catch (e) {
-        Alert.alert('Login failed', e.message?.replaceAll('UID', 'User Id'));
-        console.error(e);
-        dispatch({
-          type: 'user/failed',
-          // payload: {
-          //   message: 'network request failed',
-          // },
-        });
-      }
-    } else {
-      console.log('user already logged', user);
-      dispatch(
-        setUserInDB_f({
-          name: user.name,
-          token: user.authToken,
-          password: inputs.Password,
-          uid: user.uid,
-        }),
-      );
-      setInputs({UserId: '', Password: ''});
-    }
-  }
 
   const form_data = {
     Submit_text: 'Login',
@@ -109,7 +68,7 @@ export default function Login({navigation}) {
         Alert.alert("Passward can't be empty");
         return;
       }
-      dispatch(handleLogin);
+      dispatch(handleLogin(inputs.UserId, inputs.Password, setInputs));
     },
     inputs: [
       {
@@ -183,10 +142,15 @@ export default function Login({navigation}) {
       </View>
 
       {/* other login icons */}
-      <View style={[styles.flexRow, {paddingHorizontal: 60, display: 'none'}]}>
-        <Pressable>
+
+      <View style={[styles.flexRow, {paddingHorizontal: 60}]}>
+        <Pressable
+          onPress={() => {
+            signInWithGoogle();
+          }}>
           <Image
             // style={styles.Samll_Image}
+
             source={require('../../Assets/Google.png')}
           />
         </Pressable>
