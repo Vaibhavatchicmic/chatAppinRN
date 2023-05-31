@@ -9,6 +9,7 @@ import {
 GoogleSignin.configure();
 
 // Somewhere in your code
+
 const signIn = async () => {
   console.log('login with google');
   try {
@@ -27,6 +28,7 @@ const signIn = async () => {
       console.log('some other error happened');
     }
   }
+  console.log('after');
 };
 
 const signOut = async () => {

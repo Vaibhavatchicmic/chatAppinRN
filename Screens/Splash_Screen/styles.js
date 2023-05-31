@@ -34,7 +34,8 @@ export const styles = StyleSheet.create({
   btn: {
     backgroundColor: '#771F98',
     borderRadius: 15,
-    paddingHorizontal: 90,
+    // paddingHorizontal: 90,
+    paddingHorizontal: 'auto',
     paddingVertical: 8,
     textAlign: 'center',
     color: 'white',

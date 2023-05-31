@@ -132,10 +132,7 @@ export default function Login({navigation}) {
 
       {/* or login with */}
       <View
-        style={[
-          styles.flexRow,
-          {paddingBottom: 30, paddingHorizontal: 20, display: 'none'},
-        ]}>
+        style={[styles.flexRow, {paddingBottom: 30, paddingHorizontal: 20}]}>
         <View style={styles.Horizontal_Line} />
         <Text style={styles.Text}>Or Login With</Text>
         <View style={styles.Horizontal_Line} />
@@ -143,10 +140,15 @@ export default function Login({navigation}) {
 
       {/* other login icons */}
 
-      <View style={[styles.flexRow, {paddingHorizontal: 60}]}>
+      <View
+        style={[styles.flexRow, {paddingHorizontal: 60, paddingBottom: 30}]}>
         <Pressable
-          onPress={() => {
-            signInWithGoogle();
+          onPress={async () => {
+            try {
+              await signInWithGoogle();
+            } catch (e) {
+              console.log('after login');
+            }
           }}>
           <Image
             // style={styles.Samll_Image}
