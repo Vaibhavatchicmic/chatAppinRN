@@ -1,5 +1,13 @@
 import React, {useEffect, useRef} from 'react';
-import {Image, Text, View, StatusBar, Alert, Dimensions} from 'react-native';
+import {
+  Image,
+  Text,
+  View,
+  StatusBar,
+  Alert,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import MyModal from '../Widgets/Modal';
 import {useSelector} from 'react-redux';
 import {selectUsername} from '../../Redux/store';
@@ -19,7 +27,10 @@ export default function SplashScreen({navigation}) {
   console.log(user.status);
   const {width} = Dimensions.get('window');
   return (
-    <View style={{backgroundColor: '#F8F8F8', flex: 1}}>
+    <ScrollView
+      style={{backgroundColor: '#F8F8F8', flex: 1}}
+      bounces={false}
+      overScrollMode="never">
       {user.status === 'loading' ? (
         <>
           <StatusBar backgroundColor="#F8F8F8" />
@@ -56,6 +67,6 @@ export default function SplashScreen({navigation}) {
         </>
       )}
       {/* <MyModal></MyModal> */}
-    </View>
+    </ScrollView>
   );
 }

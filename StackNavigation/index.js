@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, KeyboardAvoidingView} from 'react-native';
 import React, {useEffect} from 'react';
 
 import Login from '../Screens/Login';

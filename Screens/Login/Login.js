@@ -132,7 +132,11 @@ export default function Login({navigation}) {
   };
 
   return (
-    <ScrollView overScrollMode="never" style={styles.con}>
+    <ScrollView
+      overScrollMode="never"
+      // alwaysBounceVertical={false}
+      bounces={false}
+      style={styles.con}>
       <MyStatusBar />
       <View behavior="position">
         {/* Back button */}

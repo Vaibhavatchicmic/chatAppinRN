@@ -133,7 +133,7 @@ export function Register({navigation}) {
     ],
   };
   return (
-    <ScrollView style={styles.con} overScrollMode="never">
+    <ScrollView style={styles.con} overScrollMode="never" bounces={false}>
       <MyStatusBar />
       {/* Back button */}
 
